@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AUEM — Rack Suivi Feuille</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --border: #e0e0e0;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --primary: #3498db;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --light-blue: #ecf0f1;
+  --light-green: #d5f4e6;
+  --light-orange: #ffeaa7;
+  --light-red: #fadbd8;
+  --r: 16px;
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e8eef5 100%);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ── HEADER ── */
+.header {
+  background: white;
+  border-radius: var(--r);
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  border-left: 6px solid var(--primary);
+}
+
+.header-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-sub {
+  font-size: 14px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ── RACK GRID ── */
+.rack-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: var(--r);
+  padding: 32px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+}
+
+.etages {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.etage {
+  background: var(--light-blue);
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid var(--primary);
+}
+
+.etage-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.emp-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* ── EMPLACEMENT CARD ── */
+.emp-card {
+  background: white;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all .2s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.emp-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), transparent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.emp-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px rgba(52, 152, 219, .15);
+  transform: translateY(-2px);
+}
+
+.emp-card:hover::before {
+  opacity: 1;
+}
+
+.emp-card.empty {
+  border-color: #d0d0d0;
+  background: #fafafa;
+}
+
+.emp-card.vide::before {
+  background: linear-gradient(90deg, #bdc3c7, transparent);
+}
+
+.emp-id {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.emp-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.colis-ref {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colis-company {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colis-date {
+  font-size: 11px;
+  color: #999;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 4px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 20px;
+  width: fit-content;
+  margin-top: auto;
+  letter-spacing: .5px;
+}
+
+.status-pending {
+  background: var(--light-orange);
+  color: #d68910;
+}
+
+.status-complete {
+  background: var(--light-green);
+  color: #27ae60;
+}
+
+.emp-card.complete {
+  border-color: var(--success);
+  background: linear-gradient(135deg, rgba(46,204,113,.05) 0%, rgba(46,204,113,.02) 100%);
+}
+
+.emp-card.vide {
+  color: var(--text-light);
+}
+
+.emp-card.vide .emp-id {
+  color: #bdc3c7;
+}
+
+.empty-text {
+  font-size: 12px;
+  color: #bdc3c7;
+  font-style: italic;
+  margin: auto;
+}
+
+/* ── EMPTY STATE ── */
+.empty-slot {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-light);
+  font-size: 13px;
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  opacity: .5;
+}
+
+/* ── MODAL ── */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.modal-bg.open {
+  display: flex;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-box {
+  background: white;
+  border-radius: var(--r);
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 16px 48px rgba(0,0,0,.15);
+  animation: slideUp .25s var(--ease);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.modal-sub {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  transition: border-color .15s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, .1);
+}
+
+.form-input::placeholder {
+  color: var(--text-light);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s var(--ease);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #2980b9);
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, .3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(52, 152, 219, .4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--light-blue);
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: #dde5f0;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success), #27ae60);
+  color: white;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, .3);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 204, 113, .4);
+}
+
+.btn-danger {
+  background: var(--light-red);
+  color: var(--danger);
+  border: 2px solid #f5b7b1;
+}
+
+.btn-danger:hover {
+  background: #f9ebea;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: white;
+  border-radius: 12px;
+  padding: 14px 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.15);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .3s var(--ease);
+  pointer-events: none;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  pointer-events: all;
+}
+
+.toast-icon {
+  font-size: 16px;
+}
+
+/* ── SYNC STATUS ── */
+.sync-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-light);
+  font-weight: 600;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  z-index: 50;
+}
+
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-light);
+  transition: all .3s;
+}
+
+.sync-dot.ok {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(46, 204, 113, .6);
+}
+
+.sync-dot.loading {
+  background: var(--warning);
+  animation: pulse .8s ease-in-out infinite;
+}
+
+.sync-dot.error {
+  background: var(--danger);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.3); }
+}
+
+/* ── ACTION BUTTONS ── */
+.emp-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.emp-card:hover .emp-actions {
+  opacity: 1;
+}
+
+.btn-mini {
+  flex: 1;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  text-transform: uppercase;
+}
+
+.btn-mini-seal {
+  background: var(--light-green);
+  color: var(--success);
+  border: 1px solid rgba(46, 204, 113, .3);
+}
+
+.btn-mini-seal:hover {
+  background: rgba(46, 204, 113, .15);
+}
+
+.btn-mini-edit {
+  background: var(--light-blue);
+  color: var(--primary);
+  border: 1px solid rgba(52, 152, 219, .3);
+}
+
+.btn-mini-edit:hover {
+  background: rgba(52, 152, 219, .15);
+}
+
+.btn-mini-delete {
+  background: var(--light-red);
+  color: var(--danger);
+  border: 1px solid rgba(231, 76, 60, .3);
+}
+
+.btn-mini-delete:hover {
+  background: rgba(231, 76, 60, .15);
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  background: white;
+  border-radius: var(--r);
+  padding: 20px;
+  margin-bottom: 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+
+.stat {
+  text-align: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--light-blue);
+}
+
+.stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .header {
+    padding: 16px;
+  }
+
+  .header-title {
+    font-size: 20px;
+  }
+
+  .rack-container {
+    padding: 16px;
+  }
+
+  .emp-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Scrollbar custom */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+</style>
+</head>
+<body>
+
+<!-- SYNC STATUS -->
+<div class="sync-status">
+  <div class="sync-dot loading" id="sync-dot"></div>
+  <span id="sync-text">Sync</span>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">📋 Rack Suivi Feuille</div>
+  <div class="header-sub">Gestion des colis avec feuille de suivi — 3 étages × 3 emplacements</div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num" id="total-colis">0</div>
+    <div class="stat-label">Total colis</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="en-cours">0</div>
+    <div class="stat-label">En cours</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="completes">0</div>
+    <div class="stat-label">Complétés</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="percent">0%</div>
+    <div class="stat-label">Progression</div>
+  </div>
+</div>
+
+<!-- RACK CONTAINER -->
+<div class="rack-container">
+  <div class="etages" id="etages-container"></div>
+</div>
+
+<!-- MODALS -->
+<!-- Modal Ajouter/Modifier -->
+<div class="modal-bg" id="modal-form">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">➕ Ajouter un colis</div>
+    <div class="modal-sub" id="modal-sub">Remplissez les informations du colis</div>
+    
+    <div class="form-group">
+      <label class="form-label">N° Colis</label>
+      <input class="form-input" id="inp-ref" placeholder="Ex: C001, CLI-2024-001" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Entreprise</label>
+      <input class="form-input" id="inp-company" placeholder="Ex: Acme Corp, Supplier Inc." />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Date de fin (livraison)</label>
+      <input class="form-input" id="inp-date" type="date" />
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" id="btn-save" onclick="saveColis()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmer Scellage -->
+<div class="modal-bg" id="modal-seal">
+  <div class="modal-box">
+    <div class="modal-title">✅ Confirmer le scellage</div>
+    <div class="modal-sub" id="seal-details"></div>
+    
+    <div style="background: var(--light-green); padding: 16px; border-radius: 8px; margin: 16px 0; text-align: center;">
+      <strong style="color: var(--success);">La feuille de suivi est complète</strong>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeSealModal()">Retour</button>
+      <button class="btn btn-success" onclick="confirmSeal()">🔒 Sceller ce colis</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+const FIREBASE_URL = 'https://auem-rac-suivi-feuille-default-rtdb.europe-west1.firebasedatabase.app/rack.json';
+const ETAGES = ['A', 'B', 'C'];
+const SLOTS_PER_ETAGE = 3;
+
+let state = {};
+let currentEditEmpl = null;
+let currentSealEmpl = null;
+let saveTimer = null;
+
+/* ── INIT STATE ── */
+function initState() {
+  const s = {};
+  ETAGES.forEach(e => {
+    for (let i = 1; i <= SLOTS_PER_ETAGE; i++) {
+      s[e + i] = { colis: null, complete: false };
+    }
+  });
+  return s;
+}
+
+function migrateState(data) {
+  const s = data || initState();
+  ETAGES.forEach(e => {
+    for (let i = 1; i <= SLOTS_PER_ETAGE; i++) {
+      const id = e + i;
+      if (!s[id]) s[id] = { colis: null, complete: false };
+    }
+  });
+  return s;
+}
+
+/* ── SYNC ── */
+function setSyncStatus(status) {
+  const dot = document.getElementById('sync-dot');
+  const text = document.getElementById('sync-text');
+  dot.className = 'sync-dot ' + status;
+  if (status === 'ok') {
+    text.textContent = 'Sync OK';
+    setTimeout(() => text.textContent = 'Sync', 2500);
+  } else if (status === 'loading') {
+    text.textContent = 'Syncing...';
+  } else if (status === 'error') {
+    text.textContent = 'Offline';
+  }
+}
+
+async function loadFromServer() {
+  setSyncStatus('loading');
+  try {
+    const res = await fetch(FIREBASE_URL);
+    if (!res.ok) throw new Error();
+    state = migrateState(await res.json());
+    localStorage.setItem('auem_suivi', JSON.stringify(state));
+    setSyncStatus('ok');
+    render();
+  } catch (e) {
+    try {
+      state = migrateState(JSON.parse(localStorage.getItem('auem_suivi')));
+    } catch {
+      state = initState();
+    }
+    setSyncStatus('error');
+    render();
+  }
+}
+
+async function saveToServer() {
+  setSyncStatus('loading');
+  try {
+    await fetch(FIREBASE_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    localStorage.setItem('auem_suivi', JSON.stringify(state));
+    setSyncStatus('ok');
+  } catch {
+    localStorage.setItem('auem_suivi', JSON.stringify(state));
+    setSyncStatus('error');
+  }
+}
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveToServer, 600);
+}
+
+setInterval(loadFromServer, 30000);
+
+/* ── RENDER ── */
+function render() {
+  renderStats();
+  renderRack();
+}
+
+function renderStats() {
+  let total = 0, enCours = 0, complets = 0;
+  Object.values(state).forEach(slot => {
+    if (slot.colis) {
+      total++;
+      if (slot.complete) complets++;
+      else enCours++;
+    }
+  });
+  const percent = total === 0 ? 0 : Math.round((complets / total) * 100);
+  document.getElementById('total-colis').textContent = total;
+  document.getElementById('en-cours').textContent = enCours;
+  document.getElementById('completes').textContent = complets;
+  document.getElementById('percent').textContent = percent + '%';
+}
+
+function renderRack() {
+  const container = document.getElementById('etages-container');
+  container.innerHTML = '';
+
+  ETAGES.forEach(etage => {
+    const etageDiv = document.createElement('div');
+    etageDiv.className = 'etage';
+
+    const title = document.createElement('div');
+    title.className = 'etage-title';
+    title.textContent = '📍 Étage ' + etage;
+    etageDiv.appendChild(title);
+
+    const row = document.createElement('div');
+    row.className = 'emp-row';
+
+    for (let i = 1; i <= SLOTS_PER_ETAGE; i++) {
+      const emplId = etage + i;
+      const slot = state[emplId];
+      const card = document.createElement('div');
+      card.className = 'emp-card' + (slot.colis ? (slot.complete ? ' complete' : '') : ' empty vide');
+
+      if (!slot.colis) {
+        card.innerHTML = `
+          <div class="emp-id">${emplId}</div>
+          <div style="flex:1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">+</div>
+            <div class="empty-text">Cliquez pour ajouter un colis</div>
+          </div>
+        `;
+        card.onclick = () => openAddModal(emplId);
+      } else {
+        const c = slot.colis;
+        const dateObj = new Date(c.date + 'T00:00:00');
+        const dateStr = dateObj.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+
+        card.innerHTML = `
+          <div class="emp-id">${emplId}</div>
+          <div class="emp-content">
+            <div class="colis-ref">${escapeHtml(c.ref)}</div>
+            <div class="colis-company">🏭 ${escapeHtml(c.company)}</div>
+            <div class="colis-date">📅 ${dateStr}</div>
+            <div class="status-badge ${slot.complete ? 'status-complete' : 'status-pending'}">
+              ${slot.complete ? '✓ SCELLÉ' : '⏳ En suivi'}
+            </div>
+          </div>
+          <div class="emp-actions">
+            ${slot.complete ? 
+              `<button class="btn-mini btn-mini-edit" onclick="openEditModal('${emplId}')">✏️</button>
+               <button class="btn-mini btn-mini-delete" onclick="deleteColis('${emplId}')">🗑️</button>` :
+              `<button class="btn-mini btn-mini-seal" onclick="openSealModal('${emplId}')">🔒 Sceller</button>
+               <button class="btn-mini btn-mini-edit" onclick="openEditModal('${emplId}')">✏️</button>`
+            }
+          </div>
+        `;
+      }
+      row.appendChild(card);
+    }
+    etageDiv.appendChild(row);
+    container.appendChild(etageDiv);
+  });
+}
+
+/* ── MODAL FUNCTIONS ── */
+function openAddModal(emplId) {
+  currentEditEmpl = emplId;
+  document.getElementById('modal-title').textContent = '➕ Ajouter un colis';
+  document.getElementById('modal-sub').textContent = 'Emplacement: ' + emplId;
+  document.getElementById('inp-ref').value = '';
+  document.getElementById('inp-company').value = '';
+  document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('btn-save').textContent = 'Ajouter';
+  document.getElementById('modal-form').classList.add('open');
+  document.getElementById('inp-ref').focus();
+}
+
+function openEditModal(emplId) {
+  const slot = state[emplId];
+  if (!slot.colis) return;
+  
+  currentEditEmpl = emplId;
+  const c = slot.colis;
+  document.getElementById('modal-title').textContent = '✏️ Modifier le colis';
+  document.getElementById('modal-sub').textContent = 'Emplacement: ' + emplId;
+  document.getElementById('inp-ref').value = c.ref;
+  document.getElementById('inp-company').value = c.company;
+  document.getElementById('inp-date').value = c.date;
+  document.getElementById('btn-save').textContent = 'Enregistrer';
+  document.getElementById('modal-form').classList.add('open');
+  document.getElementById('inp-ref').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-form').classList.remove('open');
+  currentEditEmpl = null;
+}
+
+function saveColis() {
+  const ref = document.getElementById('inp-ref').value.trim();
+  const company = document.getElementById('inp-company').value.trim();
+  const date = document.getElementById('inp-date').value.trim();
+
+  if (!ref || !company || !date) {
+    showToast('Remplissez tous les champs', '⚠️');
+    return;
+  }
+
+  if (!state[currentEditEmpl]) {
+    state[currentEditEmpl] = { colis: null, complete: false };
+  }
+
+  const isNew = !state[currentEditEmpl].colis;
+  state[currentEditEmpl].colis = { ref, company, date };
+
+  closeModal();
+  render();
+  scheduleSave();
+  showToast(isNew ? '✅ Colis ajouté' : '✏️ Colis modifié', '✓');
+}
+
+function openSealModal(emplId) {
+  const slot = state[emplId];
+  if (!slot.colis) return;
+
+  currentSealEmpl = emplId;
+  const c = slot.colis;
+  const dateObj = new Date(c.date + 'T00:00:00');
+  const dateStr = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  document.getElementById('seal-details').innerHTML = `
+    <strong>${escapeHtml(c.ref)}</strong><br>
+    <span style="color: var(--text-light);">🏭 ${escapeHtml(c.company)}</span><br>
+    <span style="color: var(--text-light); font-size: 12px;">📅 Livraison: ${dateStr}</span>
+  `;
+  document.getElementById('modal-seal').classList.add('open');
+}
+
+function closeSealModal() {
+  document.getElementById('modal-seal').classList.remove('open');
+  currentSealEmpl = null;
+}
+
+function confirmSeal() {
+  if (!currentSealEmpl) return;
+  state[currentSealEmpl].complete = true;
+  closeSealModal();
+  render();
+  scheduleSave();
+  showToast('🔒 Feuille scellée avec succès', '✅');
+}
+
+function deleteColis(emplId) {
+  if (!confirm('Supprimer ce colis définitivement ?')) return;
+  state[emplId] = { colis: null, complete: false };
+  render();
+  scheduleSave();
+  showToast('🗑️ Colis supprimé', '✓');
+}
+
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+/* ── TOAST ── */
+let toastTimer;
+function showToast(msg, icon = '') {
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-msg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadFromServer();
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeSealModal();
+    }
+  });
+});
+
+document.getElementById('modal-form').addEventListener('click', e => {
+  if (e.target.id === 'modal-form') closeModal();
+});
+
+document.getElementById('modal-seal').addEventListener('click', e => {
+  if (e.target.id === 'modal-seal') closeSealModal();
+});
+
+['inp-ref', 'inp-company'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveColis();
+  });
+});
+</script>
+
+</body>
+</html>
