@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AUEM — Rack Suivi Feuille</title>
+<title>AUEM — Rack attente d'usinage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -1054,7 +1054,7 @@ body::after {
   <!-- HEADER -->
   <div class="header">
     <div class="header-left">
-      <div class="header-eyebrow">AUEM — Gestion Rack</div>
+      <div class="header-eyebrow">AUEM — attente</div>
       <div class="header-title">Suivi<br>Feuille</div>
       <div class="header-sub">3 étages · 3 emplacements · Synchronisation temps réel</div>
     </div>
@@ -1079,7 +1079,7 @@ body::after {
     </div>
     <div class="stat-card s3">
       <div class="stat-num" id="s-sealed">0</div>
-      <div class="stat-label">Scellés</div>
+      <div class="stat-label">feuille prête</div>
     </div>
     <div class="stat-card s4">
       <div class="stat-num" id="s-vides">0</div>
@@ -1136,11 +1136,11 @@ body::after {
       <div class="seal-date" id="seal-date">—</div>
     </div>
     <div class="seal-notice">
-      ✅ En confirmant, vous indiquez que la <strong>feuille de suivi est complète</strong> pour ce colis. L'emplacement sera marqué comme scellé.
+      ✅ En confirmant, vous indiquez que la <strong>feuille de suivi est complète</strong> pour ce colis. L'emplacement sera marqué comme feuille prête.
     </div>
     <div class="modal-actions">
       <button class="maction maction-cancel" onclick="closeSealModal()">Retour</button>
-      <button class="maction maction-seal" onclick="confirmSeal()">🔒 Sceller</button>
+      <button class="maction maction-seal" onclick="confirmSeal()">🔒 feuille prête</button>
     </div>
   </div>
 </div>
@@ -1154,7 +1154,7 @@ body::after {
       <div class="qr-hdr-ico">⬛</div>
       <div>
         <div class="qr-hdr-title">QR Code</div>
-        <div class="qr-hdr-sub">RACK SUIVI FEUILLE — AUEM</div>
+        <div class="qr-hdr-sub">RACK attente d'usiange — AUEM</div>
       </div>
       <button class="qr-hdr-close" onclick="closeQR()">✕</button>
     </div>
@@ -1183,7 +1183,7 @@ body::after {
       <div class="guide-hdr-ico">📋</div>
       <div>
         <div class="guide-hdr-title">Guide d'utilisation</div>
-        <div class="guide-hdr-sub">RACK SUIVI FEUILLE — 4 étapes</div>
+        <div class="guide-hdr-sub">RACK attente d'usinage — 4 étapes</div>
       </div>
       <button class="guide-hdr-close" onclick="closeGuide()">✕</button>
     </div>
@@ -1251,7 +1251,7 @@ body::after {
       <!-- SLIDE 3 -->
       <div class="guide-slide" id="gslide-3">
         <div class="guide-slide-eyebrow">Étape 3 / 4</div>
-        <div class="guide-slide-title">🔒 Sceller un colis</div>
+        <div class="guide-slide-title">🔒 colis prêt </div>
         <div class="guide-slide-body">
           Quand la <strong>feuille de suivi est complète</strong> pour un colis, marquez-le comme scellé.
         </div>
