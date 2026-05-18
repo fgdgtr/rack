@@ -1041,15 +1041,97 @@ body::after {
 
 .qr-legend-row span:first-child { flex-shrink: 0; }
 
-/* ── MOBILE ── */
-@media (max-width: 640px) {
+/* ── RESPONSIVE — grille identique PC/tablette/mobile ── */
+
+/* Tablette paysage et portrait */
+@media (max-width: 900px) {
   .page { padding: 16px; }
-  .stats-grid { grid-template-columns: repeat(2,1fr); }
-  .slots-row { grid-template-columns: 1fr; }
-  .header { margin-bottom: 24px; }
-  .modal-box { padding: 24px; }
-  .slot-card { min-height: 160px; }
-  .slot-actions { opacity: 1; transform: none; }
+  .header { margin-bottom: 20px; }
+  .header-title { font-size: 28px; }
+  .sync-pill span { display: none; }
+}
+
+/* Mobile — on garde TOUJOURS 3 colonnes comme sur PC */
+@media (max-width: 640px) {
+  .page { padding: 10px; }
+  .header { margin-bottom: 16px; padding-bottom: 16px; flex-wrap: nowrap; gap: 8px; }
+  .header-title { font-size: 22px; }
+  .header-sub { font-size: 11px; }
+  .header-eyebrow { font-size: 9px; }
+
+  /* Stats : 2 colonnes sur mobile */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-num { font-size: 28px; }
+  .stat-label { font-size: 9px; }
+  .stat-card { padding: 14px 10px; }
+
+  /* Progression */
+  .progress-wrap { padding: 14px 16px; margin-bottom: 20px; }
+  .progress-label { font-size: 9px; }
+
+  /* RACK — 3 colonnes FIXES comme PC */
+  .slots-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .rack-wrap { gap: 14px; }
+  .etage-block { }
+  .etage-badge { font-size: 9px; padding: 4px 10px; }
+  .etage-label { margin-bottom: 8px; gap: 8px; }
+
+  /* Cards compactes mais lisibles */
+  .slot-card {
+    min-height: 130px;
+    padding: 10px 8px;
+    border-radius: 12px;
+  }
+
+  .slot-id { font-size: 9px; letter-spacing: 1px; }
+  .slot-status-dot { width: 6px; height: 6px; }
+  .colis-ref { font-size: 11px; margin-bottom: 2px; }
+  .colis-company { font-size: 9px; margin-bottom: 6px; }
+  .colis-date { font-size: 8px; padding: 2px 5px; margin-bottom: 6px; }
+
+  .status-pill { font-size: 8px; padding: 3px 7px; letter-spacing: .5px; }
+
+  .add-icon { width: 30px; height: 30px; font-size: 16px; }
+  .empty-label { font-size: 9px; }
+  .empty-body { gap: 5px; }
+
+  /* Actions toujours visibles sur mobile */
+  .slot-actions {
+    opacity: 1;
+    transform: none;
+    padding-top: 8px;
+    gap: 4px;
+  }
+  .act-btn {
+    padding: 5px 3px;
+    font-size: 8px;
+    border-radius: 6px;
+  }
+
+  /* Modals */
+  .modal-box { padding: 20px; border-radius: 18px; }
+  .modal-title { font-size: 18px; }
+  .guide-modal { border-radius: 20px; }
+  .guide-hdr { padding: 18px 20px 14px; }
+  .guide-slide { padding: 16px 20px; max-height: 45vh; }
+  .guide-ftr { padding: 12px 20px; }
+  .qr-body { padding: 20px; }
+
+  /* Sync pill — texte masqué sur très petit écran */
+  .sync-pill { padding: 6px 10px; }
+  .sync-pill span { display: none; }
+}
+
+/* Très petit mobile (iPhone SE etc.) */
+@media (max-width: 380px) {
+  .slot-card { min-height: 110px; padding: 8px 6px; }
+  .colis-ref { font-size: 10px; }
+  .stats-grid { gap: 6px; }
+  .slots-row { gap: 5px; }
 }
 </style>
 </head>
