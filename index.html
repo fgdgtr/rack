@@ -876,6 +876,171 @@ body::after {
 .gnav-next { background:linear-gradient(135deg,var(--g1),var(--g2)); color:white; box-shadow:0 4px 16px rgba(124,58,237,.3); }
 .gnav-next:hover { box-shadow:0 6px 24px rgba(124,58,237,.5); transform:translateY(-1px); }
 
+
+.qr-btn {
+  background: rgba(16,185,129,.12);
+  border-color: rgba(16,185,129,.3);
+  color: #34d399;
+  font-size: 16px;
+}
+.qr-btn:hover {
+  background: rgba(16,185,129,.25);
+  border-color: rgba(16,185,129,.55);
+  box-shadow: 0 0 20px rgba(16,185,129,.35);
+}
+
+/* ── QR MODAL ── */
+.qr-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(12px);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.qr-bg.open { opacity: 1; pointer-events: all; }
+
+.qr-modal {
+  background: #0f0f18;
+  border: 1px solid rgba(16,185,129,.25);
+  border-radius: 28px;
+  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  animation: guideIn .3s cubic-bezier(.34,1.4,.64,1);
+  position: relative;
+}
+.qr-modal::before {
+  content: '';
+  position: absolute;
+  top:-80px; right:-80px;
+  width:220px; height:220px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(16,185,129,.15) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.qr-hdr {
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.qr-hdr-ico {
+  width: 46px; height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.qr-hdr-title {
+  font-size: 18px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, #34d399 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.qr-hdr-sub {
+  font-size: 11px; color: var(--text3);
+  font-family: 'Space Mono', monospace; margin-top: 3px;
+}
+.qr-hdr-close {
+  margin-left: auto; background: none; border: none;
+  color: var(--text3); font-size: 22px; cursor: pointer;
+  padding: 4px 8px; border-radius: 8px; transition: all .15s; line-height: 1;
+}
+.qr-hdr-close:hover { color: var(--text); background: var(--card); }
+
+.qr-body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr-frame {
+  background: white;
+  padding: 16px;
+  border-radius: 18px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(16,185,129,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-frame img {
+  display: block;
+  border-radius: 4px;
+}
+
+.qr-spinner {
+  width: 200px; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.qr-spinner-inner {
+  width: 28px; height: 28px;
+  border: 2px solid rgba(16,185,129,.2);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.qr-url {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  text-align: center;
+  word-break: break-all;
+  line-height: 1.6;
+  width: 100%;
+}
+
+.qr-legend {
+  width: 100%;
+  background: rgba(16,185,129,.05);
+  border: 1px solid rgba(16,185,129,.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qr-legend-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #34d399;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 4px;
+}
+
+.qr-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.qr-legend-row span:first-child { flex-shrink: 0; }
+
 /* ── MOBILE ── */
 @media (max-width: 640px) {
   .page { padding: 16px; }
@@ -901,6 +1066,7 @@ body::after {
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
     <button class="guide-btn" onclick="openGuide()" title="Guide d'utilisation">?</button>
+    <button class="guide-btn qr-btn" onclick="openQR()" title="QR Code">⬛</button>
     <div class="sync-pill">
       <div class="sync-dot loading" id="sync-dot"></div>
       <span id="sync-text">Connexion…</span>
@@ -985,6 +1151,36 @@ body::after {
   </div>
 </div>
 
+
+
+<!-- QR MODAL -->
+<div class="qr-bg" id="qr-bg">
+  <div class="qr-modal">
+    <div class="qr-hdr">
+      <div class="qr-hdr-ico">⬛</div>
+      <div>
+        <div class="qr-hdr-title">QR Code</div>
+        <div class="qr-hdr-sub">RACK SUIVI FEUILLE — AUEM</div>
+      </div>
+      <button class="qr-hdr-close" onclick="closeQR()">✕</button>
+    </div>
+    <div class="qr-body">
+      <div class="qr-frame">
+        <div class="qr-spinner" id="qr-container">
+          <div class="qr-spinner-inner"></div>
+        </div>
+      </div>
+      <div class="qr-url" id="qr-url">Génération du QR code…</div>
+      <div class="qr-legend">
+        <div class="qr-legend-title">Comment utiliser</div>
+        <div class="qr-legend-row"><span>📱</span><span>Ouvrez l'appareil photo de votre téléphone</span></div>
+        <div class="qr-legend-row"><span>🎯</span><span>Pointez vers le QR code affiché</span></div>
+        <div class="qr-legend-row"><span>🔗</span><span>Cliquez sur la notification qui apparaît</span></div>
+        <div class="qr-legend-row"><span>✅</span><span>Vous arrivez directement sur cette page !</span></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- GUIDE MODAL -->
 <div class="guide-bg" id="guide-bg">
@@ -1364,6 +1560,29 @@ function showToast(msg, icon) {
 }
 
 
+
+/* ── QR CODE ── */
+function openQR() {
+  const url = window.location.href.split('?')[0];
+  document.getElementById('qr-url').textContent = url;
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '<div class="qr-spinner-inner"></div>';
+  document.getElementById('qr-bg').classList.add('open');
+  const img = new Image();
+  img.style.cssText = 'display:block;width:200px;height:200px;border-radius:4px;';
+  img.onload = () => { container.innerHTML = ''; container.appendChild(img); container.style.width='auto'; container.style.height='auto'; };
+  img.onerror = () => { container.innerHTML = '<div style="font-size:12px;color:#666;text-align:center;padding:20px;">Erreur chargement QR</div>'; };
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&bgcolor=ffffff&color=0a0a0f&margin=12';
+}
+
+function closeQR() {
+  document.getElementById('qr-bg').classList.remove('open');
+}
+
+document.getElementById('qr-bg').addEventListener('click', e => {
+  if (e.target.id === 'qr-bg') closeQR();
+});
+
 /* ── GUIDE ── */
 let guideSlide = 1;
 const GUIDE_TOTAL = 4;
@@ -1412,7 +1631,7 @@ document.getElementById('guide-bg').addEventListener('click', e => {
 
 /* ── KEYBOARD ── */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeFormModal(); closeSealModal(); }
+  if (e.key === 'Escape') { closeFormModal(); closeSealModal(); closeGuide(); closeQR(); }
 });
 document.getElementById('modal-form').addEventListener('click', e => { if (e.target.id==='modal-form') closeFormModal(); });
 document.getElementById('modal-seal').addEventListener('click', e => { if (e.target.id==='modal-seal') closeSealModal(); });
