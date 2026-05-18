@@ -5,117 +5,293 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>AUEM — Rack Suivi Feuille</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f8f9fa;
-  --card: #ffffff;
-  --border: #e0e0e0;
-  --text: #2c3e50;
-  --text-light: #7f8c8d;
-  --primary: #3498db;
-  --success: #2ecc71;
-  --warning: #f39c12;
-  --danger: #e74c3c;
-  --light-blue: #ecf0f1;
-  --light-green: #d5f4e6;
-  --light-orange: #ffeaa7;
-  --light-red: #fadbd8;
-  --r: 16px;
+  --bg: #0a0a0f;
+  --g1: #7c3aed;
+  --g2: #db2777;
+  --g3: #f59e0b;
+  --g4: #10b981;
+  --g5: #3b82f6;
+  --card: rgba(255,255,255,.04);
+  --card-hover: rgba(255,255,255,.07);
+  --border: rgba(255,255,255,.08);
+  --border-glow: rgba(124,58,237,.4);
+  --text: #f0f0f5;
+  --text2: rgba(240,240,245,.5);
+  --text3: rgba(240,240,245,.25);
+  --r: 20px;
   --ease: cubic-bezier(.4,0,.2,1);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e8eef5 100%);
+  background: var(--bg);
   color: var(--text);
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  font-family: 'Syne', sans-serif;
   min-height: 100vh;
-  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* ── MESH BG ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,58,237,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(219,39,119,.13) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 60% 30%, rgba(245,158,11,.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 /* ── HEADER ── */
 .header {
-  background: white;
-  border-radius: var(--r);
-  padding: 24px;
-  margin-bottom: 32px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06);
-  border-left: 6px solid var(--primary);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-left {}
+
+.header-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
 }
 
 .header-title {
-  font-size: 28px;
+  font-size: clamp(28px, 5vw, 46px);
   font-weight: 800;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 40%, #f472b6 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.header-sub {
+  font-size: 14px;
+  color: var(--text2);
+  font-weight: 400;
+}
+
+.sync-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 8px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  height: fit-content;
+  white-space: nowrap;
+}
+
+.sync-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--text3);
+  transition: all .3s;
+  flex-shrink: 0;
+}
+.sync-dot.ok { background: #10b981; box-shadow: 0 0 10px rgba(16,185,129,.6); }
+.sync-dot.loading { background: #f59e0b; animation: blink .8s ease-in-out infinite; }
+.sync-dot.error { background: #ef4444; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* ── STATS ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s var(--ease);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.stat-card.s1::before { background: linear-gradient(90deg, var(--g1), var(--g2)); }
+.stat-card.s2::before { background: linear-gradient(90deg, var(--g5), var(--g1)); }
+.stat-card.s3::before { background: linear-gradient(90deg, var(--g4), var(--g5)); }
+.stat-card.s4::before { background: linear-gradient(90deg, var(--g3), var(--g2)); }
+
+.stat-card:hover { transform: translateY(-2px); }
+
+.stat-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
   margin-bottom: 6px;
-  background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+}
+
+.s1 .stat-num { background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.s2 .stat-num { background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.s3 .stat-num { background: linear-gradient(135deg, #34d399, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.s4 .stat-num { background: linear-gradient(135deg, #fbbf24, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px 24px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.progress-label {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: .5px;
+  white-space: nowrap;
+  font-family: 'Space Mono', monospace;
+}
+
+.progress-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3));
+  border-radius: 10px;
+  transition: width .6s var(--ease);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.progress-pct {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: linear-gradient(135deg, var(--g1), var(--g2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.header-sub {
-  font-size: 14px;
-  color: var(--text-light);
-  font-weight: 500;
-}
-
-/* ── RACK GRID ── */
-.rack-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  background: white;
-  border-radius: var(--r);
-  padding: 32px;
-  box-shadow: 0 4px 24px rgba(0,0,0,.08);
-}
-
-.etages {
+/* ── RACK ── */
+.rack-wrap {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
 }
 
-.etage {
-  background: var(--light-blue);
-  border-radius: 12px;
-  padding: 20px;
-  border: 2px solid var(--primary);
+.etage-block {
+  position: relative;
 }
 
-.etage-title {
-  font-size: 16px;
+.etage-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.etage-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 16px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 2px;
+  padding: 5px 14px;
+  border-radius: 40px;
+  border: 1px solid;
 }
 
-.emp-row {
+.etage-A .etage-badge { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #34d399; }
+.etage-B .etage-badge { background: rgba(59,130,246,.1); border-color: rgba(59,130,246,.3); color: #60a5fa; }
+.etage-C .etage-badge { background: rgba(124,58,237,.1); border-color: rgba(124,58,237,.3); color: #a78bfa; }
+
+.etage-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.slots-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
 
-/* ── EMPLACEMENT CARD ── */
-.emp-card {
-  background: white;
-  border: 2px dashed var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  min-height: 180px;
+/* ── SLOT CARD ── */
+.slot-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   cursor: pointer;
@@ -124,907 +300,1127 @@ body {
   overflow: hidden;
 }
 
-.emp-card::before {
+.slot-card::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary), transparent);
+  inset: 0;
+  border-radius: var(--r);
   opacity: 0;
   transition: opacity .2s;
+  pointer-events: none;
 }
 
-.emp-card:hover {
-  border-color: var(--primary);
-  box-shadow: 0 4px 16px rgba(52, 152, 219, .15);
-  transform: translateY(-2px);
+.slot-card.empty:hover {
+  border-color: rgba(124,58,237,.5);
+  background: rgba(124,58,237,.06);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(124,58,237,.15);
 }
 
-.emp-card:hover::before {
-  opacity: 1;
+.slot-card.occupied {
+  border-color: rgba(255,255,255,.12);
 }
 
-.emp-card.empty {
-  border-color: #d0d0d0;
-  background: #fafafa;
+.slot-card.occupied:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,.3);
 }
 
-.emp-card.vide::before {
-  background: linear-gradient(90deg, #bdc3c7, transparent);
+.slot-card.sealed {
+  border-color: rgba(16,185,129,.3);
+  background: linear-gradient(135deg, rgba(16,185,129,.06) 0%, rgba(16,185,129,.02) 100%);
 }
 
-.emp-id {
-  font-size: 12px;
+.slot-card.sealed:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(16,185,129,.12);
+}
+
+/* Gradient accent top left coin */
+.slot-glow {
+  position: absolute;
+  top: -30px; left: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+
+.slot-card:hover .slot-glow { opacity: 1; }
+.etage-A .slot-glow { background: radial-gradient(circle, rgba(16,185,129,.2) 0%, transparent 70%); }
+.etage-B .slot-glow { background: radial-gradient(circle, rgba(59,130,246,.2) 0%, transparent 70%); }
+.etage-C .slot-glow { background: radial-gradient(circle, rgba(124,58,237,.2) 0%, transparent 70%); }
+
+.slot-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.slot-id {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 2px;
+  color: var(--text3);
 }
 
-.emp-content {
+.slot-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.slot-status-dot.pending { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,.5); }
+.slot-status-dot.sealed { background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,.5); }
+
+/* Empty slot */
+.empty-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
+.add-icon {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: rgba(255,255,255,.15);
+  transition: all .2s;
+}
+
+.slot-card:hover .add-icon {
+  border-color: rgba(124,58,237,.5);
+  color: rgba(124,58,237,.7);
+  background: rgba(124,58,237,.08);
+}
+
+.empty-label {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Filled slot */
 .colis-ref {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
-  color: var(--text);
+  margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -.3px;
 }
 
 .colis-company {
   font-size: 12px;
-  color: var(--text-light);
+  color: var(--text2);
+  margin-bottom: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .colis-date {
-  font-size: 11px;
-  color: #999;
-  font-family: 'JetBrains Mono', monospace;
-  margin-top: 4px;
-}
-
-.status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
+  gap: 5px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   padding: 4px 8px;
+  margin-bottom: 14px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 10px;
   border-radius: 20px;
+  font-family: 'Space Mono', monospace;
   width: fit-content;
+}
+
+.status-pending { background: rgba(245,158,11,.12); color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
+.status-sealed { background: rgba(16,185,129,.12); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+
+.slot-actions {
+  display: flex;
+  gap: 7px;
   margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all .2s var(--ease);
+}
+
+.slot-card:hover .slot-actions { opacity: 1; transform: translateY(0); }
+
+.act-btn {
+  flex: 1;
+  padding: 7px 6px;
+  border: none;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
   letter-spacing: .5px;
+  text-transform: uppercase;
+  font-family: 'Syne', sans-serif;
+  transition: all .15s;
 }
 
-.status-pending {
-  background: var(--light-orange);
-  color: #d68910;
+.act-seal {
+  background: rgba(16,185,129,.12);
+  color: #34d399;
+  border: 1px solid rgba(16,185,129,.25);
 }
+.act-seal:hover { background: rgba(16,185,129,.22); }
 
-.status-complete {
-  background: var(--light-green);
-  color: #27ae60;
+.act-edit {
+  background: rgba(59,130,246,.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59,130,246,.2);
 }
+.act-edit:hover { background: rgba(59,130,246,.2); }
 
-.emp-card.complete {
-  border-color: var(--success);
-  background: linear-gradient(135deg, rgba(46,204,113,.05) 0%, rgba(46,204,113,.02) 100%);
+.act-del {
+  background: rgba(239,68,68,.08);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,.18);
 }
-
-.emp-card.vide {
-  color: var(--text-light);
-}
-
-.emp-card.vide .emp-id {
-  color: #bdc3c7;
-}
-
-.empty-text {
-  font-size: 12px;
-  color: #bdc3c7;
-  font-style: italic;
-  margin: auto;
-}
-
-/* ── EMPTY STATE ── */
-.empty-slot {
-  text-align: center;
-  padding: 32px 16px;
-  color: var(--text-light);
-  font-size: 13px;
-}
-
-.empty-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
-  opacity: .5;
-}
+.act-del:hover { background: rgba(239,68,68,.16); }
 
 /* ── MODAL ── */
 .modal-bg {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.4);
-  backdrop-filter: blur(4px);
-  z-index: 100;
-  display: none;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity .2s;
+  transition: opacity .25s;
 }
 
 .modal-bg.open {
-  display: flex;
   opacity: 1;
   pointer-events: all;
 }
 
 .modal-box {
-  background: white;
-  border-radius: var(--r);
-  padding: 32px;
-  max-width: 500px;
+  background: #13131a;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 24px;
+  padding: 36px;
+  max-width: 480px;
   width: 100%;
-  box-shadow: 0 16px 48px rgba(0,0,0,.15);
-  animation: slideUp .25s var(--ease);
+  box-shadow: 0 24px 80px rgba(0,0,0,.5);
+  animation: modalIn .3s cubic-bezier(.34,1.4,.64,1);
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.modal-box::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: -80px;
+  width: 250px; height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,58,237,.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(30px) scale(.93); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal-title {
-  font-size: 20px;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.modal-slot-id {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field-label {
+  font-size: 10px;
   font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text);
-}
-
-.modal-sub {
-  font-size: 12px;
-  color: var(--text-light);
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
+  color: var(--text3);
   text-transform: uppercase;
-  letter-spacing: .5px;
-  margin-bottom: 6px;
-  display: block;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  font-family: 'Space Mono', monospace;
 }
 
-.form-input {
+.field-input {
   width: 100%;
-  padding: 10px 14px;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
   color: var(--text);
-  transition: border-color .15s;
-}
-
-.form-input:focus {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 16px;
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, .1);
+  transition: all .15s;
 }
 
-.form-input::placeholder {
-  color: var(--text-light);
+.field-input:focus {
+  border-color: rgba(124,58,237,.5);
+  background: rgba(124,58,237,.05);
+  box-shadow: 0 0 0 3px rgba(124,58,237,.1);
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+.field-input::placeholder { color: var(--text3); font-weight: 400; }
 
-.form-actions {
+.modal-actions {
   display: flex;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
-.btn {
+.maction {
   flex: 1;
-  padding: 12px 16px;
+  padding: 13px;
   border: none;
-  border-radius: 8px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: all .15s var(--ease);
+  transition: all .2s var(--ease);
   text-transform: uppercase;
   letter-spacing: .5px;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), #2980b9);
+.maction-cancel {
+  background: rgba(255,255,255,.05);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.maction-cancel:hover { background: rgba(255,255,255,.08); }
+
+.maction-confirm {
+  background: linear-gradient(135deg, var(--g1), var(--g2));
   color: white;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, .3);
+  box-shadow: 0 4px 20px rgba(124,58,237,.35);
 }
-
-.btn-primary:hover {
+.maction-confirm:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(52, 152, 219, .4);
+  box-shadow: 0 8px 28px rgba(124,58,237,.5);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-secondary {
-  background: var(--light-blue);
-  color: var(--text);
-  border: 2px solid var(--border);
-}
-
-.btn-secondary:hover {
-  background: #dde5f0;
-}
-
-.btn-success {
-  background: linear-gradient(135deg, var(--success), #27ae60);
+.maction-seal {
+  background: linear-gradient(135deg, #059669, #10b981);
   color: white;
-  box-shadow: 0 4px 12px rgba(46, 204, 113, .3);
+  box-shadow: 0 4px 20px rgba(16,185,129,.3);
 }
-
-.btn-success:hover {
+.maction-seal:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(46, 204, 113, .4);
+  box-shadow: 0 8px 28px rgba(16,185,129,.45);
 }
 
-.btn-danger {
-  background: var(--light-red);
-  color: var(--danger);
-  border: 2px solid #f5b7b1;
+/* Seal modal details */
+.seal-details-box {
+  background: rgba(16,185,129,.06);
+  border: 1px solid rgba(16,185,129,.2);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 20px 0;
 }
 
-.btn-danger:hover {
-  background: #f9ebea;
+.seal-ref { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.seal-company { font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+.seal-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--g4);
+  background: rgba(16,185,129,.08);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.seal-notice {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-top: 16px;
 }
 
 /* ── TOAST ── */
 .toast {
   position: fixed;
-  bottom: 30px;
+  bottom: 28px;
   left: 50%;
-  transform: translateX(-50%) translateY(120px);
-  background: white;
-  border-radius: 12px;
-  padding: 14px 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.15);
+  transform: translateX(-50%) translateY(100px);
+  background: #1a1a26;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 40px;
+  padding: 12px 20px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   z-index: 999;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: transform .3s var(--ease);
+  transition: transform .35s cubic-bezier(.34,1.4,.64,1);
   pointer-events: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  white-space: nowrap;
 }
 
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-  pointer-events: all;
-}
+.toast.show { transform: translateX(-50%) translateY(0); }
 
-.toast-icon {
-  font-size: 16px;
-}
-
-/* ── SYNC STATUS ── */
-.sync-status {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+/* ── GUIDE BUTTON ── */
+.guide-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(124,58,237,.15);
+  border: 1px solid rgba(124,58,237,.35);
+  color: #a78bfa;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-light);
-  font-weight: 600;
-  background: white;
-  padding: 8px 12px;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  z-index: 50;
+  justify-content: center;
+  transition: all .2s var(--ease);
+  font-family: 'Space Mono', monospace;
+  flex-shrink: 0;
 }
-
-.sync-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-light);
-  transition: all .3s;
+.guide-btn:hover {
+  background: rgba(124,58,237,.3);
+  border-color: rgba(124,58,237,.6);
+  box-shadow: 0 0 20px rgba(124,58,237,.4);
+  transform: scale(1.08);
 }
+.guide-btn:active { transform: scale(.95); }
 
-.sync-dot.ok {
-  background: var(--success);
-  box-shadow: 0 0 8px rgba(46, 204, 113, .6);
-}
-
-.sync-dot.loading {
-  background: var(--warning);
-  animation: pulse .8s ease-in-out infinite;
-}
-
-.sync-dot.error {
-  background: var(--danger);
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: .5; transform: scale(1.3); }
-}
-
-/* ── ACTION BUTTONS ── */
-.emp-actions {
+/* ── GUIDE MODAL ── */
+.guide-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(12px);
+  z-index: 400;
   display: flex;
-  gap: 6px;
-  margin-top: 8px;
-  opacity: 0;
-  transition: opacity .2s;
-}
-
-.emp-card:hover .emp-actions {
-  opacity: 1;
-}
-
-.btn-mini {
-  flex: 1;
-  padding: 6px 8px;
-  border: none;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .15s;
-  text-transform: uppercase;
-}
-
-.btn-mini-seal {
-  background: var(--light-green);
-  color: var(--success);
-  border: 1px solid rgba(46, 204, 113, .3);
-}
-
-.btn-mini-seal:hover {
-  background: rgba(46, 204, 113, .15);
-}
-
-.btn-mini-edit {
-  background: var(--light-blue);
-  color: var(--primary);
-  border: 1px solid rgba(52, 152, 219, .3);
-}
-
-.btn-mini-edit:hover {
-  background: rgba(52, 152, 219, .15);
-}
-
-.btn-mini-delete {
-  background: var(--light-red);
-  color: var(--danger);
-  border: 1px solid rgba(231, 76, 60, .3);
-}
-
-.btn-mini-delete:hover {
-  background: rgba(231, 76, 60, .15);
-}
-
-/* ── STATS BAR ── */
-.stats-bar {
-  background: white;
-  border-radius: var(--r);
+  align-items: center;
+  justify-content: center;
   padding: 20px;
-  margin-bottom: 32px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.guide-bg.open { opacity: 1; pointer-events: all; }
+
+.guide-modal {
+  background: #0f0f18;
+  border: 1px solid rgba(124,58,237,.25);
+  border-radius: 28px;
+  max-width: 540px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(124,58,237,.1);
+  animation: guideIn .3s cubic-bezier(.34,1.4,.64,1);
+  position: relative;
+}
+@keyframes guideIn {
+  from { opacity:0; transform: scale(.9) translateY(24px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+.guide-modal::before {
+  content: '';
+  position: absolute;
+  top:-80px; left:-80px;
+  width:240px; height:240px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(124,58,237,.18) 0%, transparent 70%);
+  pointer-events:none;
 }
 
-.stat {
-  text-align: center;
-  padding: 8px;
-  border-radius: 8px;
-  background: var(--light-blue);
+.guide-hdr {
+  padding: 26px 28px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
 }
-
-.stat-num {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--primary);
-  font-family: 'JetBrains Mono', monospace;
+.guide-hdr-ico {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
 }
-
-.stat-label {
-  font-size: 11px;
-  color: var(--text-light);
-  text-transform: uppercase;
-  letter-spacing: .5px;
-  font-weight: 600;
-  margin-top: 4px;
+.guide-hdr-title {
+  font-size: 19px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .header {
-    padding: 16px;
-  }
-
-  .header-title {
-    font-size: 20px;
-  }
-
-  .rack-container {
-    padding: 16px;
-  }
-
-  .emp-row {
-    grid-template-columns: 1fr;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .stats-bar {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.guide-hdr-sub {
+  font-size: 11px; color: var(--text3);
+  font-family: 'Space Mono', monospace; letter-spacing:.5px; margin-top:3px;
 }
-
-/* Scrollbar custom */
-::-webkit-scrollbar {
-  width: 4px;
+.guide-hdr-close {
+  margin-left:auto; background:none; border:none;
+  color:var(--text3); font-size:22px; cursor:pointer;
+  padding:4px 8px; border-radius:8px; transition:all .15s; line-height:1;
 }
+.guide-hdr-close:hover { color:var(--text); background:var(--card); }
 
-::-webkit-scrollbar-thumb {
-  background: #d0d0d0;
-  border-radius: 4px;
+.guide-slides { flex:1; overflow:hidden; position:relative; }
+.guide-slide {
+  display:none; flex-direction:column; gap:16px;
+  padding:24px 28px; overflow-y:auto; max-height:50vh;
 }
+.guide-slide.active { display:flex; }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #999;
+.guide-slide-eyebrow {
+  font-family:'Space Mono',monospace; font-size:10px;
+  letter-spacing:3px; color:var(--text3); text-transform:uppercase;
+}
+.guide-slide-title { font-size:20px; font-weight:800; line-height:1.2; }
+.guide-slide-body { font-size:13px; color:var(--text2); line-height:1.85; }
+
+.guide-items {
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  display:flex; flex-direction:column; gap:13px;
+}
+.guide-item {
+  display:flex; align-items:flex-start; gap:12px;
+}
+.guide-item-ico {
+  font-size:19px; width:30px; text-align:center; flex-shrink:0; margin-top:1px;
+}
+.guide-item-text { font-size:13px; color:var(--text2); line-height:1.7; }
+.guide-item-text strong { color:var(--text); font-weight:700; }
+
+.gtag {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-weight:700; padding:3px 9px;
+  border-radius:20px; font-family:'Space Mono',monospace;
+  letter-spacing:.5px; vertical-align:middle; margin:0 2px;
+}
+.gtag-p { background:rgba(124,58,237,.15); color:#a78bfa; border:1px solid rgba(124,58,237,.3); }
+.gtag-g { background:rgba(16,185,129,.12); color:#34d399; border:1px solid rgba(16,185,129,.25); }
+.gtag-o { background:rgba(245,158,11,.12); color:#fbbf24; border:1px solid rgba(245,158,11,.25); }
+.gtag-b { background:rgba(59,130,246,.12); color:#60a5fa; border:1px solid rgba(59,130,246,.25); }
+
+.guide-ftr {
+  padding:16px 28px;
+  border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:12px; flex-shrink:0;
+}
+.guide-dots { display:flex; gap:6px; flex:1; }
+.guide-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--border); transition:all .25s; cursor:pointer;
+}
+.guide-dot.active { width:22px; border-radius:3px; background:linear-gradient(90deg,var(--g1),var(--g2)); }
+.guide-nav { display:flex; gap:8px; }
+.gnav-btn {
+  padding:9px 18px; border-radius:10px; font-size:12px; font-weight:700;
+  cursor:pointer; border:none; font-family:'Syne',sans-serif;
+  transition:all .15s; letter-spacing:.3px; text-transform:uppercase;
+}
+.gnav-prev { background:var(--card); color:var(--text2); border:1px solid var(--border); }
+.gnav-prev:hover { background:var(--card-hover); }
+.gnav-next { background:linear-gradient(135deg,var(--g1),var(--g2)); color:white; box-shadow:0 4px 16px rgba(124,58,237,.3); }
+.gnav-next:hover { box-shadow:0 6px 24px rgba(124,58,237,.5); transform:translateY(-1px); }
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .page { padding: 16px; }
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .slots-row { grid-template-columns: 1fr; }
+  .header { margin-bottom: 24px; }
+  .modal-box { padding: 24px; }
+  .slot-card { min-height: 160px; }
+  .slot-actions { opacity: 1; transform: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- SYNC STATUS -->
-<div class="sync-status">
-  <div class="sync-dot loading" id="sync-dot"></div>
-  <span id="sync-text">Sync</span>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-eyebrow">AUEM — Gestion Rack</div>
+      <div class="header-title">Suivi<br>Feuille</div>
+      <div class="header-sub">3 étages · 3 emplacements · Synchronisation temps réel</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+    <button class="guide-btn" onclick="openGuide()" title="Guide d'utilisation">?</button>
+    <div class="sync-pill">
+      <div class="sync-dot loading" id="sync-dot"></div>
+      <span id="sync-text">Connexion…</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card s1">
+      <div class="stat-num" id="s-total">0</div>
+      <div class="stat-label">Colis total</div>
+    </div>
+    <div class="stat-card s2">
+      <div class="stat-num" id="s-encours">0</div>
+      <div class="stat-label">En suivi</div>
+    </div>
+    <div class="stat-card s3">
+      <div class="stat-num" id="s-sealed">0</div>
+      <div class="stat-label">Scellés</div>
+    </div>
+    <div class="stat-card s4">
+      <div class="stat-num" id="s-vides">0</div>
+      <div class="stat-label">Vides</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-label">PROGRESSION</div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-pct" id="progress-pct">0%</div>
+  </div>
+
+  <!-- RACK -->
+  <div class="rack-wrap" id="rack-wrap"></div>
+
 </div>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-title">📋 Rack Suivi Feuille</div>
-  <div class="header-sub">Gestion des colis avec feuille de suivi — 3 étages × 3 emplacements</div>
-</div>
-
-<!-- STATS -->
-<div class="stats-bar">
-  <div class="stat">
-    <div class="stat-num" id="total-colis">0</div>
-    <div class="stat-label">Total colis</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num" id="en-cours">0</div>
-    <div class="stat-label">En cours</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num" id="completes">0</div>
-    <div class="stat-label">Complétés</div>
-  </div>
-  <div class="stat">
-    <div class="stat-num" id="percent">0%</div>
-    <div class="stat-label">Progression</div>
-  </div>
-</div>
-
-<!-- RACK CONTAINER -->
-<div class="rack-container">
-  <div class="etages" id="etages-container"></div>
-</div>
-
-<!-- MODALS -->
-<!-- Modal Ajouter/Modifier -->
+<!-- MODAL AJOUTER / MODIFIER -->
 <div class="modal-bg" id="modal-form">
   <div class="modal-box">
-    <div class="modal-title" id="modal-title">➕ Ajouter un colis</div>
-    <div class="modal-sub" id="modal-sub">Remplissez les informations du colis</div>
-    
-    <div class="form-group">
-      <label class="form-label">N° Colis</label>
-      <input class="form-input" id="inp-ref" placeholder="Ex: C001, CLI-2024-001" />
+    <div class="modal-title" id="modal-form-title">Ajouter un colis</div>
+    <div class="modal-slot-id" id="modal-form-sub">EMPLACEMENT —</div>
+    <div class="field">
+      <div class="field-label">N° Colis</div>
+      <input class="field-input" id="inp-ref" placeholder="Ex : CLI-2024-001" />
     </div>
-
-    <div class="form-group">
-      <label class="form-label">Entreprise</label>
-      <input class="form-input" id="inp-company" placeholder="Ex: Acme Corp, Supplier Inc." />
+    <div class="field">
+      <div class="field-label">Entreprise</div>
+      <input class="field-input" id="inp-company" placeholder="Ex : Acme Industries" />
     </div>
-
-    <div class="form-group">
-      <label class="form-label">Date de fin (livraison)</label>
-      <input class="form-input" id="inp-date" type="date" />
+    <div class="field">
+      <div class="field-label">Date de fin de livraison</div>
+      <input class="field-input" id="inp-date" type="date" />
     </div>
-
-    <div class="form-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn btn-primary" id="btn-save" onclick="saveColis()">Ajouter</button>
+    <div class="modal-actions">
+      <button class="maction maction-cancel" onclick="closeFormModal()">Annuler</button>
+      <button class="maction maction-confirm" onclick="saveColis()">Valider</button>
     </div>
   </div>
 </div>
 
-<!-- Modal Confirmer Scellage -->
+<!-- MODAL SCELLER -->
 <div class="modal-bg" id="modal-seal">
   <div class="modal-box">
-    <div class="modal-title">✅ Confirmer le scellage</div>
-    <div class="modal-sub" id="seal-details"></div>
-    
-    <div style="background: var(--light-green); padding: 16px; border-radius: 8px; margin: 16px 0; text-align: center;">
-      <strong style="color: var(--success);">La feuille de suivi est complète</strong>
+    <div class="modal-title">Feuille terminée ?</div>
+    <div class="modal-slot-id" id="seal-empl-id">EMPLACEMENT —</div>
+    <div class="seal-details-box">
+      <div class="seal-ref" id="seal-ref">—</div>
+      <div class="seal-company" id="seal-company">—</div>
+      <div class="seal-date" id="seal-date">—</div>
+    </div>
+    <div class="seal-notice">
+      ✅ En confirmant, vous indiquez que la <strong>feuille de suivi est complète</strong> pour ce colis. L'emplacement sera marqué comme scellé.
+    </div>
+    <div class="modal-actions">
+      <button class="maction maction-cancel" onclick="closeSealModal()">Retour</button>
+      <button class="maction maction-seal" onclick="confirmSeal()">🔒 Sceller</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- GUIDE MODAL -->
+<div class="guide-bg" id="guide-bg">
+  <div class="guide-modal">
+    <div class="guide-hdr">
+      <div class="guide-hdr-ico">📋</div>
+      <div>
+        <div class="guide-hdr-title">Guide d'utilisation</div>
+        <div class="guide-hdr-sub">RACK SUIVI FEUILLE — 4 étapes</div>
+      </div>
+      <button class="guide-hdr-close" onclick="closeGuide()">✕</button>
     </div>
 
-    <div class="form-actions">
-      <button class="btn btn-secondary" onclick="closeSealModal()">Retour</button>
-      <button class="btn btn-success" onclick="confirmSeal()">🔒 Sceller ce colis</button>
+    <div class="guide-slides">
+
+      <!-- SLIDE 1 -->
+      <div class="guide-slide active" id="gslide-1">
+        <div class="guide-slide-eyebrow">Étape 1 / 4</div>
+        <div class="guide-slide-title">🗂️ Comprendre le rack</div>
+        <div class="guide-slide-body">
+          Ce rack contient <strong>3 étages (A, B, C)</strong> avec <strong>3 emplacements chacun</strong>, soit 9 slots au total pour stocker vos colis en attente de feuille de suivi.
+        </div>
+        <div class="guide-items">
+          <div class="guide-item">
+            <div class="guide-item-ico">🟢</div>
+            <div class="guide-item-text"><strong>Étage A</strong> — Bas, niveau sol, accès facile</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">🔵</div>
+            <div class="guide-item-text"><strong>Étage B</strong> — Milieu, accessible à la main</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">🟣</div>
+            <div class="guide-item-text"><strong>Étage C</strong> — Haut, gerbeur si nécessaire</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">📍</div>
+            <div class="guide-item-text">Chaque slot est identifié par son code : <strong>A1, B2, C3…</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="guide-slide" id="gslide-2">
+        <div class="guide-slide-eyebrow">Étape 2 / 4</div>
+        <div class="guide-slide-title">➕ Ajouter un colis</div>
+        <div class="guide-slide-body">
+          Dès qu'un colis arrive dans le rack, enregistrez-le en quelques secondes.
+        </div>
+        <div class="guide-items">
+          <div class="guide-item">
+            <div class="guide-item-ico">👆</div>
+            <div class="guide-item-text"><strong>Cliquez sur un slot vide</strong> (affiche « + Ajouter ») pour ouvrir le formulaire</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">🔢</div>
+            <div class="guide-item-text"><strong>N° Colis</strong> — Le numéro ou référence du colis (ex: CLI-2024-001)</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">🏭</div>
+            <div class="guide-item-text"><strong>Entreprise</strong> — Le nom de l'entreprise qui a envoyé le colis</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">📅</div>
+            <div class="guide-item-text"><strong>Date de fin</strong> — La date limite de livraison ou de traitement</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">✅</div>
+            <div class="guide-item-text">Cliquez <strong>Valider</strong> et le colis apparaît dans le slot avec le statut <span class="gtag gtag-o">⏳ En suivi</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="guide-slide" id="gslide-3">
+        <div class="guide-slide-eyebrow">Étape 3 / 4</div>
+        <div class="guide-slide-title">🔒 Sceller un colis</div>
+        <div class="guide-slide-body">
+          Quand la <strong>feuille de suivi est complète</strong> pour un colis, marquez-le comme scellé.
+        </div>
+        <div class="guide-items">
+          <div class="guide-item">
+            <div class="guide-item-ico">🖱️</div>
+            <div class="guide-item-text"><strong>Passez la souris</strong> (ou appuyez longtemps sur mobile) sur un slot occupé pour voir apparaître les boutons d'action</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">🔒</div>
+            <div class="guide-item-text">Cliquez <strong>Sceller</strong> — Une confirmation s'affiche avec les détails du colis</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">✅</div>
+            <div class="guide-item-text">Confirmez → le slot passe au statut <span class="gtag gtag-g">✓ Scellé</span> avec une bordure verte</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">📊</div>
+            <div class="guide-item-text">La <strong>barre de progression</strong> en haut se met à jour automatiquement</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4 -->
+      <div class="guide-slide" id="gslide-4">
+        <div class="guide-slide-eyebrow">Étape 4 / 4</div>
+        <div class="guide-slide-title">✏️ Modifier & Supprimer</div>
+        <div class="guide-slide-body">
+          Vous pouvez modifier ou supprimer un colis à tout moment depuis son slot.
+        </div>
+        <div class="guide-items">
+          <div class="guide-item">
+            <div class="guide-item-ico">✏️</div>
+            <div class="guide-item-text"><strong>Modifier</strong> — Changez le numéro, l'entreprise ou la date de fin d'un colis existant</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">🗑️</div>
+            <div class="guide-item-text"><strong>Supprimer</strong> — Vide le slot complètement (une confirmation est demandée)</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">☁️</div>
+            <div class="guide-item-text"><strong>Synchronisation auto</strong> — Toutes les modifications sont sauvegardées en temps réel et visibles sur tous les appareils</div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-item-ico">📱</div>
+            <div class="guide-item-text"><strong>Sur mobile</strong> — Les boutons d'action sont toujours visibles en bas de chaque card</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /guide-slides -->
+
+    <div class="guide-ftr">
+      <div class="guide-dots" id="guide-dots">
+        <div class="guide-dot active" onclick="goGuide(1)"></div>
+        <div class="guide-dot" onclick="goGuide(2)"></div>
+        <div class="guide-dot" onclick="goGuide(3)"></div>
+        <div class="guide-dot" onclick="goGuide(4)"></div>
+      </div>
+      <div class="guide-nav">
+        <button class="gnav-btn gnav-prev" id="gnav-prev" onclick="stepGuide(-1)">← Préc.</button>
+        <button class="gnav-btn gnav-next" id="gnav-next" onclick="stepGuide(1)">Suiv. →</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
 <div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon"></span>
-  <span id="toast-msg"></span>
+  <span id="t-icon"></span>
+  <span id="t-msg"></span>
 </div>
 
 <script>
-const FIREBASE_URL = 'https://rack-attente-usinage-default-rtdb.europe-west1.firebasedatabase.app/';
-const ETAGES = ['A', 'B', 'C'];
-const SLOTS_PER_ETAGE = 3;
+const FIREBASE_URL = 'https://rac-attente-fin-delais-default-rtdb.europe-west1.firebasedatabase.app/suivi.json';
+const ETAGES = ['C','B','A'];
+const SLOTS = 3;
 
 let state = {};
-let currentEditEmpl = null;
-let currentSealEmpl = null;
+let currentSlot = null;
+let currentSealSlot = null;
 let saveTimer = null;
 
-/* ── INIT STATE ── */
+/* ── STATE ── */
 function initState() {
   const s = {};
   ETAGES.forEach(e => {
-    for (let i = 1; i <= SLOTS_PER_ETAGE; i++) {
-      s[e + i] = { colis: null, complete: false };
-    }
+    for (let i = 1; i <= SLOTS; i++) s[e+i] = { colis: null, sealed: false };
   });
   return s;
 }
-
 function migrateState(data) {
   const s = data || initState();
   ETAGES.forEach(e => {
-    for (let i = 1; i <= SLOTS_PER_ETAGE; i++) {
-      const id = e + i;
-      if (!s[id]) s[id] = { colis: null, complete: false };
+    for (let i = 1; i <= SLOTS; i++) {
+      if (!s[e+i]) s[e+i] = { colis: null, sealed: false };
     }
   });
   return s;
 }
 
 /* ── SYNC ── */
-function setSyncStatus(status) {
-  const dot = document.getElementById('sync-dot');
-  const text = document.getElementById('sync-text');
-  dot.className = 'sync-dot ' + status;
-  if (status === 'ok') {
-    text.textContent = 'Sync OK';
-    setTimeout(() => text.textContent = 'Sync', 2500);
-  } else if (status === 'loading') {
-    text.textContent = 'Syncing...';
-  } else if (status === 'error') {
-    text.textContent = 'Offline';
-  }
+function setSyncStatus(st) {
+  document.getElementById('sync-dot').className = 'sync-dot ' + st;
+  const txt = document.getElementById('sync-text');
+  if (st === 'ok') { txt.textContent = 'Sync OK'; setTimeout(()=>txt.textContent='Temps réel',2500); }
+  else if (st === 'loading') txt.textContent = 'Sync…';
+  else txt.textContent = 'Hors-ligne';
 }
-
 async function loadFromServer() {
   setSyncStatus('loading');
   try {
     const res = await fetch(FIREBASE_URL);
     if (!res.ok) throw new Error();
     state = migrateState(await res.json());
-    localStorage.setItem('auem_suivi', JSON.stringify(state));
+    localStorage.setItem('auem_suivi2', JSON.stringify(state));
     setSyncStatus('ok');
     render();
-  } catch (e) {
-    try {
-      state = migrateState(JSON.parse(localStorage.getItem('auem_suivi')));
-    } catch {
-      state = initState();
-    }
+  } catch {
+    try { state = migrateState(JSON.parse(localStorage.getItem('auem_suivi2'))); } catch { state = initState(); }
     setSyncStatus('error');
     render();
   }
 }
-
 async function saveToServer() {
   setSyncStatus('loading');
   try {
-    await fetch(FIREBASE_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
-    });
-    localStorage.setItem('auem_suivi', JSON.stringify(state));
+    await fetch(FIREBASE_URL, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(state) });
+    localStorage.setItem('auem_suivi2', JSON.stringify(state));
     setSyncStatus('ok');
   } catch {
-    localStorage.setItem('auem_suivi', JSON.stringify(state));
+    localStorage.setItem('auem_suivi2', JSON.stringify(state));
     setSyncStatus('error');
   }
 }
-
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveToServer, 600);
-}
-
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveToServer, 600); }
 setInterval(loadFromServer, 30000);
 
 /* ── RENDER ── */
-function render() {
-  renderStats();
-  renderRack();
-}
+function render() { renderStats(); renderRack(); }
 
 function renderStats() {
-  let total = 0, enCours = 0, complets = 0;
-  Object.values(state).forEach(slot => {
-    if (slot.colis) {
-      total++;
-      if (slot.complete) complets++;
-      else enCours++;
-    }
+  let total=0, encours=0, sealed=0, vides=0;
+  Object.values(state).forEach(s => {
+    if (s.colis) { total++; s.sealed ? sealed++ : encours++; }
+    else vides++;
   });
-  const percent = total === 0 ? 0 : Math.round((complets / total) * 100);
-  document.getElementById('total-colis').textContent = total;
-  document.getElementById('en-cours').textContent = enCours;
-  document.getElementById('completes').textContent = complets;
-  document.getElementById('percent').textContent = percent + '%';
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-encours').textContent = encours;
+  document.getElementById('s-sealed').textContent = sealed;
+  document.getElementById('s-vides').textContent = vides;
+  const pct = total === 0 ? 0 : Math.round(sealed/total*100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
 }
 
 function renderRack() {
-  const container = document.getElementById('etages-container');
-  container.innerHTML = '';
-
+  const wrap = document.getElementById('rack-wrap');
+  wrap.innerHTML = '';
   ETAGES.forEach(etage => {
-    const etageDiv = document.createElement('div');
-    etageDiv.className = 'etage';
-
-    const title = document.createElement('div');
-    title.className = 'etage-title';
-    title.textContent = '📍 Étage ' + etage;
-    etageDiv.appendChild(title);
-
-    const row = document.createElement('div');
-    row.className = 'emp-row';
-
-    for (let i = 1; i <= SLOTS_PER_ETAGE; i++) {
-      const emplId = etage + i;
-      const slot = state[emplId];
-      const card = document.createElement('div');
-      card.className = 'emp-card' + (slot.colis ? (slot.complete ? ' complete' : '') : ' empty vide');
-
-      if (!slot.colis) {
-        card.innerHTML = `
-          <div class="emp-id">${emplId}</div>
-          <div style="flex:1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-            <div style="font-size: 28px; margin-bottom: 8px;">+</div>
-            <div class="empty-text">Cliquez pour ajouter un colis</div>
-          </div>
-        `;
-        card.onclick = () => openAddModal(emplId);
-      } else {
-        const c = slot.colis;
-        const dateObj = new Date(c.date + 'T00:00:00');
-        const dateStr = dateObj.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
-
-        card.innerHTML = `
-          <div class="emp-id">${emplId}</div>
-          <div class="emp-content">
-            <div class="colis-ref">${escapeHtml(c.ref)}</div>
-            <div class="colis-company">🏭 ${escapeHtml(c.company)}</div>
-            <div class="colis-date">📅 ${dateStr}</div>
-            <div class="status-badge ${slot.complete ? 'status-complete' : 'status-pending'}">
-              ${slot.complete ? '✓ SCELLÉ' : '⏳ En suivi'}
-            </div>
-          </div>
-          <div class="emp-actions">
-            ${slot.complete ? 
-              `<button class="btn-mini btn-mini-edit" onclick="openEditModal('${emplId}')">✏️</button>
-               <button class="btn-mini btn-mini-delete" onclick="deleteColis('${emplId}')">🗑️</button>` :
-              `<button class="btn-mini btn-mini-seal" onclick="openSealModal('${emplId}')">🔒 Sceller</button>
-               <button class="btn-mini btn-mini-edit" onclick="openEditModal('${emplId}')">✏️</button>`
-            }
-          </div>
-        `;
-      }
-      row.appendChild(card);
+    const block = document.createElement('div');
+    block.className = 'etage-block etage-' + etage;
+    const labelRow = document.createElement('div');
+    labelRow.className = 'etage-label';
+    labelRow.innerHTML = `<div class="etage-badge">ÉTAGE ${etage}</div><div class="etage-line"></div>`;
+    block.appendChild(labelRow);
+    const slotsRow = document.createElement('div');
+    slotsRow.className = 'slots-row';
+    for (let i = 1; i <= SLOTS; i++) {
+      const id = etage + i;
+      const slot = state[id];
+      slotsRow.appendChild(buildSlotCard(id, slot));
     }
-    etageDiv.appendChild(row);
-    container.appendChild(etageDiv);
+    block.appendChild(slotsRow);
+    wrap.appendChild(block);
   });
 }
 
-/* ── MODAL FUNCTIONS ── */
-function openAddModal(emplId) {
-  currentEditEmpl = emplId;
-  document.getElementById('modal-title').textContent = '➕ Ajouter un colis';
-  document.getElementById('modal-sub').textContent = 'Emplacement: ' + emplId;
+function buildSlotCard(id, slot) {
+  const card = document.createElement('div');
+  if (!slot.colis) {
+    card.className = 'slot-card empty';
+    card.innerHTML = `
+      <div class="slot-glow"></div>
+      <div class="slot-top">
+        <div class="slot-id">${id}</div>
+        <div class="slot-status-dot"></div>
+      </div>
+      <div class="empty-body">
+        <div class="add-icon">+</div>
+        <div class="empty-label">Aucun colis<br>Cliquez pour ajouter</div>
+      </div>`;
+    card.onclick = () => openAddModal(id);
+  } else {
+    const c = slot.colis;
+    const dateStr = new Date(c.date + 'T00:00:00').toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
+    card.className = 'slot-card occupied' + (slot.sealed ? ' sealed' : '');
+    let actionsHtml = slot.sealed
+      ? `<button class="act-btn act-edit" onclick="event.stopPropagation();openEditModal('${id}')">✏️ Modif.</button>
+         <button class="act-btn act-del" onclick="event.stopPropagation();deleteColis('${id}')">🗑️ Suppr.</button>`
+      : `<button class="act-btn act-seal" onclick="event.stopPropagation();openSealModal('${id}')">🔒 Sceller</button>
+         <button class="act-btn act-edit" onclick="event.stopPropagation();openEditModal('${id}')">✏️</button>
+         <button class="act-btn act-del" onclick="event.stopPropagation();deleteColis('${id}')">🗑️</button>`;
+    card.innerHTML = `
+      <div class="slot-glow"></div>
+      <div class="slot-top">
+        <div class="slot-id">${id}</div>
+        <div class="slot-status-dot ${slot.sealed ? 'sealed' : 'pending'}"></div>
+      </div>
+      <div class="colis-ref">${esc(c.ref)}</div>
+      <div class="colis-company">🏭 ${esc(c.company)}</div>
+      <div class="colis-date">📅 ${dateStr}</div>
+      <div class="status-pill ${slot.sealed ? 'status-sealed' : 'status-pending'}">
+        ${slot.sealed ? '✓ Scellé' : '⏳ En suivi'}
+      </div>
+      <div class="slot-actions">${actionsHtml}</div>`;
+  }
+  return card;
+}
+
+/* ── MODAL FORM ── */
+function openAddModal(id) {
+  currentSlot = id;
+  document.getElementById('modal-form-title').textContent = 'Ajouter un colis';
+  document.getElementById('modal-form-sub').textContent = 'EMPLACEMENT — ' + id;
   document.getElementById('inp-ref').value = '';
   document.getElementById('inp-company').value = '';
   document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('btn-save').textContent = 'Ajouter';
   document.getElementById('modal-form').classList.add('open');
-  document.getElementById('inp-ref').focus();
+  setTimeout(() => document.getElementById('inp-ref').focus(), 100);
 }
-
-function openEditModal(emplId) {
-  const slot = state[emplId];
-  if (!slot.colis) return;
-  
-  currentEditEmpl = emplId;
-  const c = slot.colis;
-  document.getElementById('modal-title').textContent = '✏️ Modifier le colis';
-  document.getElementById('modal-sub').textContent = 'Emplacement: ' + emplId;
+function openEditModal(id) {
+  const c = state[id].colis;
+  if (!c) return;
+  currentSlot = id;
+  document.getElementById('modal-form-title').textContent = 'Modifier le colis';
+  document.getElementById('modal-form-sub').textContent = 'EMPLACEMENT — ' + id;
   document.getElementById('inp-ref').value = c.ref;
   document.getElementById('inp-company').value = c.company;
   document.getElementById('inp-date').value = c.date;
-  document.getElementById('btn-save').textContent = 'Enregistrer';
   document.getElementById('modal-form').classList.add('open');
-  document.getElementById('inp-ref').focus();
 }
-
-function closeModal() {
-  document.getElementById('modal-form').classList.remove('open');
-  currentEditEmpl = null;
-}
+function closeFormModal() { document.getElementById('modal-form').classList.remove('open'); currentSlot = null; }
 
 function saveColis() {
   const ref = document.getElementById('inp-ref').value.trim();
   const company = document.getElementById('inp-company').value.trim();
   const date = document.getElementById('inp-date').value.trim();
-
-  if (!ref || !company || !date) {
-    showToast('Remplissez tous les champs', '⚠️');
-    return;
-  }
-
-  if (!state[currentEditEmpl]) {
-    state[currentEditEmpl] = { colis: null, complete: false };
-  }
-
-  const isNew = !state[currentEditEmpl].colis;
-  state[currentEditEmpl].colis = { ref, company, date };
-
-  closeModal();
+  if (!ref || !company || !date) { showToast('Remplissez tous les champs ⚠️', ''); return; }
+  const isNew = !state[currentSlot].colis;
+  state[currentSlot].colis = { ref, company, date };
+  if (isNew) state[currentSlot].sealed = false;
+  closeFormModal();
   render();
   scheduleSave();
-  showToast(isNew ? '✅ Colis ajouté' : '✏️ Colis modifié', '✓');
+  showToast(isNew ? 'Colis ajouté !' : 'Modifications enregistrées', isNew ? '📦' : '✏️');
 }
 
-function openSealModal(emplId) {
-  const slot = state[emplId];
-  if (!slot.colis) return;
-
-  currentSealEmpl = emplId;
-  const c = slot.colis;
-  const dateObj = new Date(c.date + 'T00:00:00');
-  const dateStr = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-  document.getElementById('seal-details').innerHTML = `
-    <strong>${escapeHtml(c.ref)}</strong><br>
-    <span style="color: var(--text-light);">🏭 ${escapeHtml(c.company)}</span><br>
-    <span style="color: var(--text-light); font-size: 12px;">📅 Livraison: ${dateStr}</span>
-  `;
+/* ── MODAL SEAL ── */
+function openSealModal(id) {
+  const c = state[id].colis;
+  if (!c) return;
+  currentSealSlot = id;
+  document.getElementById('seal-empl-id').textContent = 'EMPLACEMENT — ' + id;
+  document.getElementById('seal-ref').textContent = c.ref;
+  document.getElementById('seal-company').textContent = '🏭 ' + c.company;
+  document.getElementById('seal-date').textContent = '📅 ' + new Date(c.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
   document.getElementById('modal-seal').classList.add('open');
 }
-
-function closeSealModal() {
-  document.getElementById('modal-seal').classList.remove('open');
-  currentSealEmpl = null;
-}
-
+function closeSealModal() { document.getElementById('modal-seal').classList.remove('open'); currentSealSlot = null; }
 function confirmSeal() {
-  if (!currentSealEmpl) return;
-  state[currentSealEmpl].complete = true;
+  if (!currentSealSlot) return;
+  state[currentSealSlot].sealed = true;
   closeSealModal();
   render();
   scheduleSave();
-  showToast('🔒 Feuille scellée avec succès', '✅');
+  showToast('Colis scellé avec succès !', '🔒');
 }
 
-function deleteColis(emplId) {
-  if (!confirm('Supprimer ce colis définitivement ?')) return;
-  state[emplId] = { colis: null, complete: false };
+/* ── SUPPRIMER ── */
+function deleteColis(id) {
+  if (!confirm('Supprimer ce colis ?')) return;
+  state[id] = { colis: null, sealed: false };
   render();
   scheduleSave();
-  showToast('🗑️ Colis supprimé', '✓');
+  showToast('Colis supprimé', '🗑️');
 }
 
-function escapeHtml(text) {
-  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-  return String(text).replace(/[&<>"']/g, m => map[m]);
+/* ── UTILS ── */
+function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let toastT;
+function showToast(msg, icon) {
+  document.getElementById('t-icon').textContent = icon;
+  document.getElementById('t-msg').textContent = msg;
+  const el = document.getElementById('toast');
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-/* ── TOAST ── */
-let toastTimer;
-function showToast(msg, icon = '') {
-  document.getElementById('toast-icon').textContent = icon;
-  document.getElementById('toast-msg').textContent = msg;
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+
+/* ── GUIDE ── */
+let guideSlide = 1;
+const GUIDE_TOTAL = 4;
+
+function openGuide() {
+  guideSlide = 1;
+  updateGuideSlide();
+  document.getElementById('guide-bg').classList.add('open');
 }
 
-/* ── INIT ── */
-document.addEventListener('DOMContentLoaded', () => {
-  loadFromServer();
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeSealModal();
-    }
+function closeGuide() {
+  document.getElementById('guide-bg').classList.remove('open');
+}
+
+function goGuide(n) {
+  guideSlide = n;
+  updateGuideSlide();
+}
+
+function stepGuide(dir) {
+  guideSlide = Math.max(1, Math.min(GUIDE_TOTAL, guideSlide + dir));
+  updateGuideSlide();
+}
+
+function updateGuideSlide() {
+  for (let i = 1; i <= GUIDE_TOTAL; i++) {
+    document.getElementById('gslide-' + i).classList.toggle('active', i === guideSlide);
+  }
+  document.querySelectorAll('.guide-dot').forEach((d, i) => {
+    d.classList.toggle('active', i + 1 === guideSlide);
   });
+  document.getElementById('gnav-prev').style.visibility = guideSlide === 1 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('gnav-next');
+  if (guideSlide === GUIDE_TOTAL) {
+    nextBtn.textContent = '✓ Fermer';
+    nextBtn.onclick = closeGuide;
+  } else {
+    nextBtn.textContent = 'Suiv. →';
+    nextBtn.onclick = () => stepGuide(1);
+  }
+}
+
+document.getElementById('guide-bg').addEventListener('click', e => {
+  if (e.target.id === 'guide-bg') closeGuide();
 });
 
-document.getElementById('modal-form').addEventListener('click', e => {
-  if (e.target.id === 'modal-form') closeModal();
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeFormModal(); closeSealModal(); }
+});
+document.getElementById('modal-form').addEventListener('click', e => { if (e.target.id==='modal-form') closeFormModal(); });
+document.getElementById('modal-seal').addEventListener('click', e => { if (e.target.id==='modal-seal') closeSealModal(); });
+['inp-ref','inp-company'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') saveColis(); });
 });
 
-document.getElementById('modal-seal').addEventListener('click', e => {
-  if (e.target.id === 'modal-seal') closeSealModal();
-});
-
-['inp-ref', 'inp-company'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => {
-    if (e.key === 'Enter') saveColis();
-  });
-});
+loadFromServer();
 </script>
-
 </body>
 </html>
