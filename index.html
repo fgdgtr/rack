@@ -32,7 +32,7 @@ body {
   color: var(--text);
   font-family: 'Syne', sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 /* ── MESH BG ── */
@@ -1041,91 +1041,9 @@ body::after {
 
 .qr-legend-row span:first-child { flex-shrink: 0; }
 
-/* ── RESPONSIVE ── */
-
-/* Tablette */
+/* ── RESPONSIVE — scroll natif, même layout que PC ── */
 @media (max-width: 900px) {
-  .page { padding: 16px; }
-  .header-title { font-size: 30px; }
-  .sync-pill span { display: none; }
-}
-
-/* Mobile — 1 colonne par étage, cards bien lisibles */
-@media (max-width: 640px) {
-  .page { padding: 14px; }
-
-  /* Header compact */
-  .header { margin-bottom: 16px; padding-bottom: 16px; }
-  .header-title { font-size: 24px; }
-  .header-sub { font-size: 12px; }
-  .header-eyebrow { font-size: 9px; }
-  .sync-pill { padding: 6px 10px; }
-  .sync-pill span { display: none; }
-
-  /* Stats 2x2 */
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-  .stat-num { font-size: 30px; }
-  .stat-label { font-size: 10px; }
-  .stat-card { padding: 14px; }
-
-  /* Progression */
-  .progress-wrap { padding: 14px 16px; margin-bottom: 20px; gap: 12px; }
-  .progress-label { font-size: 9px; }
-
-  /* Rack — étages côte à côte horizontalement */
-  .rack-wrap {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
-  /* Chaque étage prend 1 colonne, avec ses 3 slots empilés */
-  .etage-block { margin: 0; }
-
-  .etage-label { margin-bottom: 8px; }
-  .etage-badge { font-size: 10px; padding: 4px 10px; }
-  .etage-line { display: none; }
-
-  /* 1 colonne par étage = 3 slots empilés verticalement */
-  .slots-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  /* Cards bien lisibles */
-  .slot-card {
-    min-height: 120px;
-    padding: 12px 10px;
-    border-radius: 14px;
-  }
-
-  .slot-top { margin-bottom: 10px; }
-  .slot-id { font-size: 10px; }
-  .colis-ref { font-size: 13px; }
-  .colis-company { font-size: 11px; }
-  .colis-date { font-size: 9px; padding: 3px 6px; }
-  .status-pill { font-size: 9px; padding: 4px 8px; }
-
-  .add-icon { width: 32px; height: 32px; font-size: 18px; }
-  .empty-label { font-size: 10px; }
-
-  /* Actions toujours visibles */
-  .slot-actions { opacity: 1; transform: none; padding-top: 10px; gap: 4px; }
-  .act-btn { padding: 6px 4px; font-size: 9px; }
-
-  /* Modals full width */
-  .modal-box { padding: 22px; border-radius: 18px; margin: 0 4px; }
-  .modal-title { font-size: 18px; }
-  .guide-modal { border-radius: 22px; }
-  .guide-hdr { padding: 18px 20px 14px; }
-  .guide-hdr-title { font-size: 16px; }
-  .guide-slide { padding: 16px 20px; max-height: 42vh; }
-  .guide-ftr { padding: 12px 20px; }
-  .qr-modal { border-radius: 22px; }
-  .qr-body { padding: 20px; }
-  .qr-frame img { width: 160px; height: 160px; }
-  .qr-spinner { width: 160px; height: 160px; }
+  .slot-actions { opacity: 1; transform: none; }
 }
 </style>
 </head>
