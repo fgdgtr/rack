@@ -1041,97 +1041,91 @@ body::after {
 
 .qr-legend-row span:first-child { flex-shrink: 0; }
 
-/* ── RESPONSIVE — grille identique PC/tablette/mobile ── */
+/* ── RESPONSIVE ── */
 
-/* Tablette paysage et portrait */
+/* Tablette */
 @media (max-width: 900px) {
   .page { padding: 16px; }
-  .header { margin-bottom: 20px; }
-  .header-title { font-size: 28px; }
+  .header-title { font-size: 30px; }
   .sync-pill span { display: none; }
 }
 
-/* Mobile — on garde TOUJOURS 3 colonnes comme sur PC */
+/* Mobile — 1 colonne par étage, cards bien lisibles */
 @media (max-width: 640px) {
-  .page { padding: 10px; }
-  .header { margin-bottom: 16px; padding-bottom: 16px; flex-wrap: nowrap; gap: 8px; }
-  .header-title { font-size: 22px; }
-  .header-sub { font-size: 11px; }
+  .page { padding: 14px; }
+
+  /* Header compact */
+  .header { margin-bottom: 16px; padding-bottom: 16px; }
+  .header-title { font-size: 24px; }
+  .header-sub { font-size: 12px; }
   .header-eyebrow { font-size: 9px; }
-
-  /* Stats : 2 colonnes sur mobile */
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-  .stat-num { font-size: 28px; }
-  .stat-label { font-size: 9px; }
-  .stat-card { padding: 14px 10px; }
-
-  /* Progression */
-  .progress-wrap { padding: 14px 16px; margin-bottom: 20px; }
-  .progress-label { font-size: 9px; }
-
-  /* RACK — 3 colonnes FIXES comme PC */
-  .slots-row {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-
-  .rack-wrap { gap: 14px; }
-  .etage-block { }
-  .etage-badge { font-size: 9px; padding: 4px 10px; }
-  .etage-label { margin-bottom: 8px; gap: 8px; }
-
-  /* Cards compactes mais lisibles */
-  .slot-card {
-    min-height: 130px;
-    padding: 10px 8px;
-    border-radius: 12px;
-  }
-
-  .slot-id { font-size: 9px; letter-spacing: 1px; }
-  .slot-status-dot { width: 6px; height: 6px; }
-  .colis-ref { font-size: 11px; margin-bottom: 2px; }
-  .colis-company { font-size: 9px; margin-bottom: 6px; }
-  .colis-date { font-size: 8px; padding: 2px 5px; margin-bottom: 6px; }
-
-  .status-pill { font-size: 8px; padding: 3px 7px; letter-spacing: .5px; }
-
-  .add-icon { width: 30px; height: 30px; font-size: 16px; }
-  .empty-label { font-size: 9px; }
-  .empty-body { gap: 5px; }
-
-  /* Actions toujours visibles sur mobile */
-  .slot-actions {
-    opacity: 1;
-    transform: none;
-    padding-top: 8px;
-    gap: 4px;
-  }
-  .act-btn {
-    padding: 5px 3px;
-    font-size: 8px;
-    border-radius: 6px;
-  }
-
-  /* Modals */
-  .modal-box { padding: 20px; border-radius: 18px; }
-  .modal-title { font-size: 18px; }
-  .guide-modal { border-radius: 20px; }
-  .guide-hdr { padding: 18px 20px 14px; }
-  .guide-slide { padding: 16px 20px; max-height: 45vh; }
-  .guide-ftr { padding: 12px 20px; }
-  .qr-body { padding: 20px; }
-
-  /* Sync pill — texte masqué sur très petit écran */
   .sync-pill { padding: 6px 10px; }
   .sync-pill span { display: none; }
-}
 
-/* Très petit mobile (iPhone SE etc.) */
-@media (max-width: 380px) {
-  .slot-card { min-height: 110px; padding: 8px 6px; }
-  .colis-ref { font-size: 10px; }
-  .stats-grid { gap: 6px; }
-  .slots-row { gap: 5px; }
+  /* Stats 2x2 */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-num { font-size: 30px; }
+  .stat-label { font-size: 10px; }
+  .stat-card { padding: 14px; }
+
+  /* Progression */
+  .progress-wrap { padding: 14px 16px; margin-bottom: 20px; gap: 12px; }
+  .progress-label { font-size: 9px; }
+
+  /* Rack — étages côte à côte horizontalement */
+  .rack-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  /* Chaque étage prend 1 colonne, avec ses 3 slots empilés */
+  .etage-block { margin: 0; }
+
+  .etage-label { margin-bottom: 8px; }
+  .etage-badge { font-size: 10px; padding: 4px 10px; }
+  .etage-line { display: none; }
+
+  /* 1 colonne par étage = 3 slots empilés verticalement */
+  .slots-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Cards bien lisibles */
+  .slot-card {
+    min-height: 120px;
+    padding: 12px 10px;
+    border-radius: 14px;
+  }
+
+  .slot-top { margin-bottom: 10px; }
+  .slot-id { font-size: 10px; }
+  .colis-ref { font-size: 13px; }
+  .colis-company { font-size: 11px; }
+  .colis-date { font-size: 9px; padding: 3px 6px; }
+  .status-pill { font-size: 9px; padding: 4px 8px; }
+
+  .add-icon { width: 32px; height: 32px; font-size: 18px; }
+  .empty-label { font-size: 10px; }
+
+  /* Actions toujours visibles */
+  .slot-actions { opacity: 1; transform: none; padding-top: 10px; gap: 4px; }
+  .act-btn { padding: 6px 4px; font-size: 9px; }
+
+  /* Modals full width */
+  .modal-box { padding: 22px; border-radius: 18px; margin: 0 4px; }
+  .modal-title { font-size: 18px; }
+  .guide-modal { border-radius: 22px; }
+  .guide-hdr { padding: 18px 20px 14px; }
+  .guide-hdr-title { font-size: 16px; }
+  .guide-slide { padding: 16px 20px; max-height: 42vh; }
+  .guide-ftr { padding: 12px 20px; }
+  .qr-modal { border-radius: 22px; }
+  .qr-body { padding: 20px; }
+  .qr-frame img { width: 160px; height: 160px; }
+  .qr-spinner { width: 160px; height: 160px; }
 }
 </style>
 </head>
