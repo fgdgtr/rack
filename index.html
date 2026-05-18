@@ -1452,7 +1452,7 @@ function buildSlotCard(id, slot) {
     let actionsHtml = slot.sealed
       ? `<button class="act-btn act-edit" onclick="event.stopPropagation();openEditModal('${id}')">✏️ Modif.</button>
          <button class="act-btn act-del" onclick="event.stopPropagation();deleteColis('${id}')">🗑️ Suppr.</button>`
-      : `<button class="act-btn act-seal" onclick="event.stopPropagation();openSealModal('${id}')">🔒 Sceller</button>
+      : `<button class="act-btn act-seal" onclick="event.stopPropagation();openSealModal('${id}')">🔒 colis prêt</button>
          <button class="act-btn act-edit" onclick="event.stopPropagation();openEditModal('${id}')">✏️</button>
          <button class="act-btn act-del" onclick="event.stopPropagation();deleteColis('${id}')">🗑️</button>`;
     card.innerHTML = `
@@ -1465,7 +1465,7 @@ function buildSlotCard(id, slot) {
       <div class="colis-company">🏭 ${esc(c.company)}</div>
       <div class="colis-date">📅 ${dateStr}</div>
       <div class="status-pill ${slot.sealed ? 'status-sealed' : 'status-pending'}">
-        ${slot.sealed ? '✓ Scellé' : '⏳ En suivi'}
+        ${slot.sealed ? '✓ prêt' : '⏳ En suivi'}
       </div>
       <div class="slot-actions">${actionsHtml}</div>`;
   }
@@ -1528,7 +1528,7 @@ function confirmSeal() {
   closeSealModal();
   render();
   scheduleSave();
-  showToast('Colis scellé avec succès !', '🔒');
+  showToast('Colis prêt pour l'usinage', '🔒');
 }
 
 /* ── SUPPRIMER ── */
