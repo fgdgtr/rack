@@ -539,6 +539,8 @@ body::after {
   padding: 36px;
   max-width: 480px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 24px 80px rgba(0,0,0,.5);
   animation: modalIn .3s cubic-bezier(.34,1.4,.64,1);
   position: relative;
@@ -713,7 +715,7 @@ body::after {
 
 .toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ── GUIDE BUTTON ── */
+/* ── BUTTONS ── */
 .guide-btn {
   width: 40px; height: 40px;
   border-radius: 50%;
@@ -738,145 +740,6 @@ body::after {
 }
 .guide-btn:active { transform: scale(.95); }
 
-/* ── GUIDE MODAL ── */
-.guide-bg {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.75);
-  backdrop-filter: blur(12px);
-  z-index: 400;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s;
-}
-.guide-bg.open { opacity: 1; pointer-events: all; }
-
-.guide-modal {
-  background: #0f0f18;
-  border: 1px solid rgba(124,58,237,.25);
-  border-radius: 28px;
-  max-width: 540px;
-  width: 100%;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(124,58,237,.1);
-  animation: guideIn .3s cubic-bezier(.34,1.4,.64,1);
-  position: relative;
-}
-@keyframes guideIn {
-  from { opacity:0; transform: scale(.9) translateY(24px); }
-  to   { opacity:1; transform: scale(1) translateY(0); }
-}
-.guide-modal::before {
-  content: '';
-  position: absolute;
-  top:-80px; left:-80px;
-  width:240px; height:240px;
-  border-radius:50%;
-  background: radial-gradient(circle, rgba(124,58,237,.18) 0%, transparent 70%);
-  pointer-events:none;
-}
-
-.guide-hdr {
-  padding: 26px 28px 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-shrink: 0;
-}
-.guide-hdr-ico {
-  width: 48px; height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--g1), var(--g2));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
-}
-.guide-hdr-title {
-  font-size: 19px; font-weight: 800;
-  background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.guide-hdr-sub {
-  font-size: 11px; color: var(--text3);
-  font-family: 'Space Mono', monospace; letter-spacing:.5px; margin-top:3px;
-}
-.guide-hdr-close {
-  margin-left:auto; background:none; border:none;
-  color:var(--text3); font-size:22px; cursor:pointer;
-  padding:4px 8px; border-radius:8px; transition:all .15s; line-height:1;
-}
-.guide-hdr-close:hover { color:var(--text); background:var(--card); }
-
-.guide-slides { flex:1; overflow:hidden; position:relative; }
-.guide-slide {
-  display:none; flex-direction:column; gap:16px;
-  padding:24px 28px; overflow-y:auto; max-height:50vh;
-}
-.guide-slide.active { display:flex; }
-
-.guide-slide-eyebrow {
-  font-family:'Space Mono',monospace; font-size:10px;
-  letter-spacing:3px; color:var(--text3); text-transform:uppercase;
-}
-.guide-slide-title { font-size:20px; font-weight:800; line-height:1.2; }
-.guide-slide-body { font-size:13px; color:var(--text2); line-height:1.85; }
-
-.guide-items {
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
-  display:flex; flex-direction:column; gap:13px;
-}
-.guide-item {
-  display:flex; align-items:flex-start; gap:12px;
-}
-.guide-item-ico {
-  font-size:19px; width:30px; text-align:center; flex-shrink:0; margin-top:1px;
-}
-.guide-item-text { font-size:13px; color:var(--text2); line-height:1.7; }
-.guide-item-text strong { color:var(--text); font-weight:700; }
-
-.gtag {
-  display:inline-flex; align-items:center; gap:4px;
-  font-size:10px; font-weight:700; padding:3px 9px;
-  border-radius:20px; font-family:'Space Mono',monospace;
-  letter-spacing:.5px; vertical-align:middle; margin:0 2px;
-}
-.gtag-p { background:rgba(124,58,237,.15); color:#a78bfa; border:1px solid rgba(124,58,237,.3); }
-.gtag-g { background:rgba(16,185,129,.12); color:#34d399; border:1px solid rgba(16,185,129,.25); }
-.gtag-o { background:rgba(245,158,11,.12); color:#fbbf24; border:1px solid rgba(245,158,11,.25); }
-.gtag-b { background:rgba(59,130,246,.12); color:#60a5fa; border:1px solid rgba(59,130,246,.25); }
-
-.guide-ftr {
-  padding:16px 28px;
-  border-top:1px solid var(--border);
-  display:flex; align-items:center; gap:12px; flex-shrink:0;
-}
-.guide-dots { display:flex; gap:6px; flex:1; }
-.guide-dot {
-  width:6px; height:6px; border-radius:50%;
-  background:var(--border); transition:all .25s; cursor:pointer;
-}
-.guide-dot.active { width:22px; border-radius:3px; background:linear-gradient(90deg,var(--g1),var(--g2)); }
-.guide-nav { display:flex; gap:8px; }
-.gnav-btn {
-  padding:9px 18px; border-radius:10px; font-size:12px; font-weight:700;
-  cursor:pointer; border:none; font-family:'Syne',sans-serif;
-  transition:all .15s; letter-spacing:.3px; text-transform:uppercase;
-}
-.gnav-prev { background:var(--card); color:var(--text2); border:1px solid var(--border); }
-.gnav-prev:hover { background:var(--card-hover); }
-.gnav-next { background:linear-gradient(135deg,var(--g1),var(--g2)); color:white; box-shadow:0 4px 16px rgba(124,58,237,.3); }
-.gnav-next:hover { box-shadow:0 6px 24px rgba(124,58,237,.5); transform:translateY(-1px); }
-
-
 .qr-btn {
   background: rgba(16,185,129,.12);
   border-color: rgba(16,185,129,.3);
@@ -889,12 +752,24 @@ body::after {
   box-shadow: 0 0 20px rgba(16,185,129,.35);
 }
 
-/* ── QR MODAL ── */
-.qr-bg {
+.hist-btn {
+  background: rgba(59,130,246,.12);
+  border-color: rgba(59,130,246,.3);
+  color: #60a5fa;
+  font-size: 16px;
+}
+.hist-btn:hover {
+  background: rgba(59,130,246,.25);
+  border-color: rgba(59,130,246,.55);
+  box-shadow: 0 0 20px rgba(59,130,246,.35);
+}
+
+/* ── HISTORIQUE MODAL ── */
+.hist-bg {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.75);
   backdrop-filter: blur(12px);
-  z-index: 400;
+  z-index: 300;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -903,145 +778,120 @@ body::after {
   pointer-events: none;
   transition: opacity .25s;
 }
-.qr-bg.open { opacity: 1; pointer-events: all; }
+.hist-bg.open { opacity: 1; pointer-events: all; }
 
-.qr-modal {
+.hist-modal {
   background: #0f0f18;
-  border: 1px solid rgba(16,185,129,.25);
+  border: 1px solid rgba(59,130,246,.25);
   border-radius: 28px;
-  max-width: 400px;
+  max-width: 620px;
   width: 100%;
+  max-height: 85vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: 0 32px 80px rgba(0,0,0,.7);
-  animation: guideIn .3s cubic-bezier(.34,1.4,.64,1);
-  position: relative;
+  animation: histIn .3s cubic-bezier(.34,1.4,.64,1);
 }
-.qr-modal::before {
-  content: '';
-  position: absolute;
-  top:-80px; right:-80px;
-  width:220px; height:220px;
-  border-radius:50%;
-  background: radial-gradient(circle, rgba(16,185,129,.15) 0%, transparent 70%);
-  pointer-events:none;
+@keyframes histIn {
+  from { opacity:0; transform: scale(.9) translateY(24px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
 }
 
-.qr-hdr {
-  padding: 24px 26px 18px;
-  border-bottom: 1px solid var(--border);
+.hist-hdr {
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
+  flex-shrink: 0;
 }
-.qr-hdr-ico {
-  width: 46px; height: 46px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #059669, #10b981);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
-}
-.qr-hdr-title {
-  font-size: 18px; font-weight: 800;
-  background: linear-gradient(135deg, #fff 0%, #34d399 100%);
+.hist-hdr-title {
+  font-size: 20px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, #60a5fa 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-.qr-hdr-sub {
-  font-size: 11px; color: var(--text3);
-  font-family: 'Space Mono', monospace; margin-top: 3px;
+.hist-hdr-close {
+  background: none; border: none; color: var(--text3);
+  font-size: 22px; cursor: pointer; padding: 4px 8px;
+  border-radius: 8px; transition: all .15s; line-height: 1;
 }
-.qr-hdr-close {
-  margin-left: auto; background: none; border: none;
-  color: var(--text3); font-size: 22px; cursor: pointer;
-  padding: 4px 8px; border-radius: 8px; transition: all .15s; line-height: 1;
-}
-.qr-hdr-close:hover { color: var(--text); background: var(--card); }
+.hist-hdr-close:hover { color: var(--text); background: var(--card); }
 
-.qr-body {
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+.hist-body {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 8px;
 }
 
-.qr-frame {
-  background: white;
-  padding: 16px;
-  border-radius: 18px;
-  box-shadow: 0 8px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(16,185,129,.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.hist-empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--text3); font-size: 13px;
 }
 
-.qr-frame img {
-  display: block;
-  border-radius: 4px;
-}
-
-.qr-spinner {
-  width: 200px; height: 200px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.qr-spinner-inner {
-  width: 28px; height: 28px;
-  border: 2px solid rgba(16,185,129,.2);
-  border-top-color: #10b981;
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.qr-url {
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--border);
+.hist-item {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(59,130,246,.15);
   border-radius: 12px;
   padding: 12px 16px;
-  font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  color: var(--text3);
-  text-align: center;
-  word-break: break-all;
-  line-height: 1.6;
-  width: 100%;
-}
-
-.qr-legend {
-  width: 100%;
-  background: rgba(16,185,129,.05);
-  border: 1px solid rgba(16,185,129,.15);
-  border-radius: 12px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.qr-legend-title {
-  font-size: 10px;
-  font-weight: 700;
-  color: #34d399;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-family: 'Space Mono', monospace;
-  margin-bottom: 4px;
-}
-
-.qr-legend-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  color: var(--text2);
+  gap: 12px;
+  transition: all .15s;
+}
+.hist-item:hover { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.3); }
+
+.hist-ico {
+  font-size: 20px; flex-shrink: 0;
 }
 
-.qr-legend-row span:first-child { flex-shrink: 0; }
+.hist-content {
+  flex: 1; min-width: 0;
+}
+.hist-ref { font-size: 13px; font-weight: 700; font-family: 'Space Mono', monospace; color: var(--text); }
+.hist-info { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 3px; }
+.hist-date { font-size: 9px; color: var(--text3); margin-top: 2px; }
 
-/* ── RESPONSIVE — scroll natif, même layout que PC ── */
+.hist-status {
+  font-size: 9px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+  font-family: 'Space Mono', monospace;
+}
+.hist-status.sealed { background: rgba(16,185,129,.15); color: #34d399; }
+.hist-status.added { background: rgba(59,130,246,.15); color: #60a5fa; }
+.hist-status.deleted { background: rgba(239,68,68,.15); color: #f87171; }
+
+.hist-ftr {
+  padding: 14px 28px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.hist-btn-pdf {
+  flex: 1; padding: 11px;
+  border-radius: 10px; font-size: 12px; font-weight: 700;
+  cursor: pointer; border: none; font-family: 'Syne', sans-serif;
+  transition: all .15s; letter-spacing: .3px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--g5), #60a5fa);
+  color: white; box-shadow: 0 4px 12px rgba(59,130,246,.25);
+}
+.hist-btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(59,130,246,.4); }
+
+.hist-btn-clear {
+  flex: 1; padding: 11px;
+  border-radius: 10px; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: 'Syne', sans-serif;
+  transition: all .15s; letter-spacing: .3px;
+  text-transform: uppercase;
+  background: rgba(239,68,68,.1); color: #f87171;
+  border: 1px solid rgba(239,68,68,.2);
+}
+.hist-btn-clear:hover { background: rgba(239,68,68,.15); }
+
+/* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .slot-actions { opacity: 1; transform: none; }
 }
@@ -1061,6 +911,7 @@ body::after {
     <div style="display:flex;align-items:center;gap:10px;">
     <button class="guide-btn" onclick="openGuide()" title="Guide d'utilisation">?</button>
     <button class="guide-btn qr-btn" onclick="openQR()" title="QR Code">⬛</button>
+    <button class="guide-btn hist-btn" onclick="openHist()" title="Historique">📊</button>
     <div class="sync-pill">
       <div class="sync-dot loading" id="sync-dot"></div>
       <span id="sync-text">Connexion…</span>
@@ -1145,176 +996,19 @@ body::after {
   </div>
 </div>
 
-
-
-<!-- QR MODAL -->
-<div class="qr-bg" id="qr-bg">
-  <div class="qr-modal">
-    <div class="qr-hdr">
-      <div class="qr-hdr-ico">⬛</div>
-      <div>
-        <div class="qr-hdr-title">QR Code</div>
-        <div class="qr-hdr-sub">RACK attente d'usiange — AUEM</div>
-      </div>
-      <button class="qr-hdr-close" onclick="closeQR()">✕</button>
+<!-- HISTORIQUE MODAL -->
+<div class="hist-bg" id="hist-bg">
+  <div class="hist-modal">
+    <div class="hist-hdr">
+      <div class="hist-hdr-title">📊 Historique des opérations</div>
+      <button class="hist-hdr-close" onclick="closeHist()">✕</button>
     </div>
-    <div class="qr-body">
-      <div class="qr-frame">
-        <div class="qr-spinner" id="qr-container">
-          <div class="qr-spinner-inner"></div>
-        </div>
-      </div>
-      <div class="qr-url" id="qr-url">Génération du QR code…</div>
-      <div class="qr-legend">
-        <div class="qr-legend-title">Comment utiliser</div>
-        <div class="qr-legend-row"><span>📱</span><span>Ouvrez l'appareil photo de votre téléphone</span></div>
-        <div class="qr-legend-row"><span>🎯</span><span>Pointez vers le QR code affiché</span></div>
-        <div class="qr-legend-row"><span>🔗</span><span>Cliquez sur la notification qui apparaît</span></div>
-        <div class="qr-legend-row"><span>✅</span><span>Vous arrivez directement sur cette page !</span></div>
-      </div>
+    <div class="hist-body" id="hist-body">
+      <div class="hist-empty">Aucune opération enregistrée</div>
     </div>
-  </div>
-</div>
-
-<!-- GUIDE MODAL -->
-<div class="guide-bg" id="guide-bg">
-  <div class="guide-modal">
-    <div class="guide-hdr">
-      <div class="guide-hdr-ico">📋</div>
-      <div>
-        <div class="guide-hdr-title">Guide d'utilisation</div>
-        <div class="guide-hdr-sub">RACK attente d'usinage — 4 étapes</div>
-      </div>
-      <button class="guide-hdr-close" onclick="closeGuide()">✕</button>
-    </div>
-
-    <div class="guide-slides">
-
-      <!-- SLIDE 1 -->
-      <div class="guide-slide active" id="gslide-1">
-        <div class="guide-slide-eyebrow">Étape 1 / 4</div>
-        <div class="guide-slide-title">🗂️ Comprendre le rack</div>
-        <div class="guide-slide-body">
-          Ce rack contient <strong>3 étages (A, B, C)</strong> avec <strong>3 emplacements chacun</strong>, soit 9 slots au total pour stocker vos colis en attente de feuille de suivi.
-        </div>
-        <div class="guide-items">
-          <div class="guide-item">
-            <div class="guide-item-ico">🟢</div>
-            <div class="guide-item-text"><strong>Étage A</strong> — Bas, niveau sol, accès facile</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">🔵</div>
-            <div class="guide-item-text"><strong>Étage B</strong> — Milieu, accessible à la main</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">🟣</div>
-            <div class="guide-item-text"><strong>Étage C</strong> — Haut, gerbeur si nécessaire</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">📍</div>
-            <div class="guide-item-text">Chaque slot est identifié par son code : <strong>A1, B2, C3…</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SLIDE 2 -->
-      <div class="guide-slide" id="gslide-2">
-        <div class="guide-slide-eyebrow">Étape 2 / 4</div>
-        <div class="guide-slide-title">➕ Ajouter un colis</div>
-        <div class="guide-slide-body">
-          Dès qu'un colis arrive dans le rack, enregistrez-le en quelques secondes.
-        </div>
-        <div class="guide-items">
-          <div class="guide-item">
-            <div class="guide-item-ico">👆</div>
-            <div class="guide-item-text"><strong>Cliquez sur un slot vide</strong> (affiche « + Ajouter ») pour ouvrir le formulaire</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">🔢</div>
-            <div class="guide-item-text"><strong>N° Colis</strong> — Le numéro ou référence du colis </div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">🏭</div>
-            <div class="guide-item-text"><strong>Entreprise</strong> — Le nom de l'entreprise qui a envoyé le colis</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">📅</div>
-            <div class="guide-item-text"><strong>Date de fin</strong> — La date limite de livraison ou de traitement</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">✅</div>
-            <div class="guide-item-text">Cliquez <strong>Valider</strong> et le colis apparaît dans le slot avec le statut <span class="gtag gtag-o">⏳ En suivi</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SLIDE 3 -->
-      <div class="guide-slide" id="gslide-3">
-        <div class="guide-slide-eyebrow">Étape 3 / 4</div>
-        <div class="guide-slide-title">🔒 colis prêt </div>
-        <div class="guide-slide-body">
-          Quand la <strong>feuille de suivi est complète</strong> pour un colis, marquez-le comme scellé.
-        </div>
-        <div class="guide-items">
-          <div class="guide-item">
-            <div class="guide-item-ico">🖱️</div>
-            <div class="guide-item-text"><strong>Passez la souris</strong> (ou appuyez longtemps sur mobile) sur un slot occupé pour voir apparaître les boutons d'action</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">🔒</div>
-            <div class="guide-item-text">Cliquez <strong>colis prêt </strong> — Une confirmation s'affiche avec les détails du colis</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">✅</div>
-            <div class="guide-item-text">Confirmez → le slot passe au statut <span class="gtag gtag-g">✓ prêt</span> avec une bordure verte</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">📊</div>
-            <div class="guide-item-text">La <strong>barre de progression</strong> en haut se met à jour automatiquement</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SLIDE 4 -->
-      <div class="guide-slide" id="gslide-4">
-        <div class="guide-slide-eyebrow">Étape 4 / 4</div>
-        <div class="guide-slide-title">✏️ Modifier & Supprimer</div>
-        <div class="guide-slide-body">
-          Vous pouvez modifier ou supprimer un colis à tout moment depuis son slot.
-        </div>
-        <div class="guide-items">
-          <div class="guide-item">
-            <div class="guide-item-ico">✏️</div>
-            <div class="guide-item-text"><strong>Modifier</strong> — Changez le numéro, l'entreprise ou la date de fin d'un colis existant</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">🗑️</div>
-            <div class="guide-item-text"><strong>Supprimer</strong> — Vide le slot complètement (une confirmation est demandée)</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">☁️</div>
-            <div class="guide-item-text"><strong>Synchronisation auto</strong> — Toutes les modifications sont sauvegardées en temps réel et visibles sur tous les appareils</div>
-          </div>
-          <div class="guide-item">
-            <div class="guide-item-ico">📱</div>
-            <div class="guide-item-text"><strong>Sur mobile</strong> — Les boutons d'action sont toujours visibles en bas de chaque card</div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /guide-slides -->
-
-    <div class="guide-ftr">
-      <div class="guide-dots" id="guide-dots">
-        <div class="guide-dot active" onclick="goGuide(1)"></div>
-        <div class="guide-dot" onclick="goGuide(2)"></div>
-        <div class="guide-dot" onclick="goGuide(3)"></div>
-        <div class="guide-dot" onclick="goGuide(4)"></div>
-      </div>
-      <div class="guide-nav">
-        <button class="gnav-btn gnav-prev" id="gnav-prev" onclick="stepGuide(-1)">← Préc.</button>
-        <button class="gnav-btn gnav-next" id="gnav-next" onclick="stepGuide(1)">Suiv. →</button>
-      </div>
+    <div class="hist-ftr">
+      <button class="hist-btn-pdf" onclick="exportPDF()">📥 Export PDF</button>
+      <button class="hist-btn-clear" onclick="clearHist()">🗑️ Effacer</button>
     </div>
   </div>
 </div>
@@ -1325,6 +1019,7 @@ body::after {
   <span id="t-msg"></span>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 const FIREBASE_URL = 'https://rac-attente-fin-delais-default-rtdb.europe-west1.firebasedatabase.app/suivi.json';
 const ETAGES = ['C','B','A'];
@@ -1334,6 +1029,7 @@ let state = {};
 let currentSlot = null;
 let currentSealSlot = null;
 let saveTimer = null;
+let historique = [];
 
 /* ── STATE ── */
 function initState() {
@@ -1351,6 +1047,32 @@ function migrateState(data) {
     }
   });
   return s;
+}
+
+/* ── HISTORIQUE ── */
+function loadHist() {
+  try {
+    historique = JSON.parse(localStorage.getItem('auem_hist') || '[]');
+  } catch {
+    historique = [];
+  }
+}
+
+function saveHist() {
+  localStorage.setItem('auem_hist', JSON.stringify(historique));
+}
+
+function addHist(action, slot, ref, company) {
+  historique.unshift({
+    action,
+    slot,
+    ref: ref || '—',
+    company: company || '—',
+    date: new Date().toISOString(),
+    timestamp: Date.now()
+  });
+  if (historique.length > 200) historique.pop();
+  saveHist();
 }
 
 /* ── SYNC ── */
@@ -1504,6 +1226,7 @@ function saveColis() {
   const isNew = !state[currentSlot].colis;
   state[currentSlot].colis = { ref, company, date };
   if (isNew) state[currentSlot].sealed = false;
+  addHist('added', currentSlot, ref, company);
   closeFormModal();
   render();
   scheduleSave();
@@ -1524,7 +1247,9 @@ function openSealModal(id) {
 function closeSealModal() { document.getElementById('modal-seal').classList.remove('open'); currentSealSlot = null; }
 function confirmSeal() {
   if (!currentSealSlot) return;
+  const c = state[currentSealSlot].colis;
   state[currentSealSlot].sealed = true;
+  addHist('sealed', currentSealSlot, c.ref, c.company);
   closeSealModal();
   render();
   scheduleSave();
@@ -1534,6 +1259,8 @@ function confirmSeal() {
 /* ── SUPPRIMER ── */
 function deleteColis(id) {
   if (!confirm('Supprimer ce colis ?')) return;
+  const c = state[id].colis;
+  addHist('deleted', id, c ? c.ref : '—', c ? c.company : '—');
   state[id] = { colis: null, sealed: false };
   render();
   scheduleSave();
@@ -1553,79 +1280,114 @@ function showToast(msg, icon) {
   toastT = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-
-
-/* ── QR CODE ── */
-function openQR() {
-  const url = window.location.href.split('?')[0];
-  document.getElementById('qr-url').textContent = url;
-  const container = document.getElementById('qr-container');
-  container.innerHTML = '<div class="qr-spinner-inner"></div>';
-  document.getElementById('qr-bg').classList.add('open');
-  const img = new Image();
-  img.style.cssText = 'display:block;width:200px;height:200px;border-radius:4px;';
-  img.onload = () => { container.innerHTML = ''; container.appendChild(img); container.style.width='auto'; container.style.height='auto'; };
-  img.onerror = () => { container.innerHTML = '<div style="font-size:12px;color:#666;text-align:center;padding:20px;">Erreur chargement QR</div>'; };
-  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&bgcolor=ffffff&color=0a0a0f&margin=12';
+/* ── HISTORIQUE ── */
+function openHist() {
+  renderHist();
+  document.getElementById('hist-bg').classList.add('open');
 }
-
-function closeQR() {
-  document.getElementById('qr-bg').classList.remove('open');
+function closeHist() {
+  document.getElementById('hist-bg').classList.remove('open');
 }
-
-document.getElementById('qr-bg').addEventListener('click', e => {
-  if (e.target.id === 'qr-bg') closeQR();
-});
-
-/* ── GUIDE ── */
-let guideSlide = 1;
-const GUIDE_TOTAL = 4;
-
-function openGuide() {
-  guideSlide = 1;
-  updateGuideSlide();
-  document.getElementById('guide-bg').classList.add('open');
-}
-
-function closeGuide() {
-  document.getElementById('guide-bg').classList.remove('open');
-}
-
-function goGuide(n) {
-  guideSlide = n;
-  updateGuideSlide();
-}
-
-function stepGuide(dir) {
-  guideSlide = Math.max(1, Math.min(GUIDE_TOTAL, guideSlide + dir));
-  updateGuideSlide();
-}
-
-function updateGuideSlide() {
-  for (let i = 1; i <= GUIDE_TOTAL; i++) {
-    document.getElementById('gslide-' + i).classList.toggle('active', i === guideSlide);
+function renderHist() {
+  const body = document.getElementById('hist-body');
+  if (!historique.length) {
+    body.innerHTML = '<div class="hist-empty">Aucune opération enregistrée</div>';
+    return;
   }
-  document.querySelectorAll('.guide-dot').forEach((d, i) => {
-    d.classList.toggle('active', i + 1 === guideSlide);
-  });
-  document.getElementById('gnav-prev').style.visibility = guideSlide === 1 ? 'hidden' : 'visible';
-  const nextBtn = document.getElementById('gnav-next');
-  if (guideSlide === GUIDE_TOTAL) {
-    nextBtn.textContent = '✓ Fermer';
-    nextBtn.onclick = closeGuide;
-  } else {
-    nextBtn.textContent = 'Suiv. →';
-    nextBtn.onclick = () => stepGuide(1);
-  }
+  body.innerHTML = historique.map(h => {
+    const d = new Date(h.date);
+    const ds = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+    const icons = { added: '➕', sealed: '✅', deleted: '🗑️' };
+    const statuses = { added: 'added', sealed: 'sealed', deleted: 'deleted' };
+    return `<div class="hist-item">
+      <div class="hist-ico">${icons[h.action]}</div>
+      <div class="hist-content">
+        <div class="hist-ref">${esc(h.ref)}</div>
+        <div class="hist-info">${esc(h.company)}</div>
+        <div class="hist-date">${ds} — ${esc(h.slot)}</div>
+      </div>
+      <div class="hist-status ${statuses[h.action]}">${h.action.toUpperCase()}</div>
+    </div>`;
+  }).join('');
 }
 
-document.getElementById('guide-bg').addEventListener('click', e => {
-  if (e.target.id === 'guide-bg') closeGuide();
+function clearHist() {
+  if (!confirm('Effacer tout l\'historique ? Cette action est irréversible.')) return;
+  historique = [];
+  saveHist();
+  renderHist();
+  showToast('Historique effacé', '🗑️');
+}
+
+function exportPDF() {
+  const html = `
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        .icon { font-size: 14px; }
+        .timestamp { color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <h1>📊 Historique des Opérations — AUEM Rack Attente</h1>
+      <p><strong>Généré le:</strong> ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Colis</th>
+            <th>Entreprise</th>
+            <th>Emplacement</th>
+            <th>Date & Heure</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${historique.map(h => {
+            const d = new Date(h.date);
+            const ds = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+            const icons = { added: '➕ Ajouté', sealed: '✅ Scellé', deleted: '🗑️ Supprimé' };
+            return `<tr>
+              <td class="icon">${icons[h.action]}</td>
+              <td><strong>${h.ref}</strong></td>
+              <td>${h.company}</td>
+              <td><strong>${h.slot}</strong></td>
+              <td class="timestamp">${ds}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      <p style="margin-top: 40px; color: #999; font-size: 12px;">Total opérations: ${historique.length}</p>
+    </body>
+    </html>
+  `;
+  
+  const element = document.createElement('div');
+  element.innerHTML = html;
+  const opt = {
+    margin: 10,
+    filename: 'AUEM_Historique_' + new Date().toISOString().split('T')[0] + '.pdf',
+    image: { type: 'png', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  };
+  html2pdf().set(opt).from(html).save();
+  showToast('PDF téléchargé!', '📥');
+}
+
+document.getElementById('hist-bg').addEventListener('click', e => {
+  if (e.target.id === 'hist-bg') closeHist();
 });
 
 /* ── KEYBOARD ── */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeFormModal(); closeSealModal(); closeGuide(); closeQR(); }
+  if (e.key === 'Escape') { closeFormModal(); closeSealModal(); closeHist(); }
 });
 document.getElementById('modal-form').addEventListener('click', e => { if (e.target.id==='modal-form') closeFormModal(); });
 document.getElementById('modal-seal').addEventListener('click', e => { if (e.target.id==='modal-seal') closeSealModal(); });
@@ -1633,6 +1395,7 @@ document.getElementById('modal-seal').addEventListener('click', e => { if (e.tar
   document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') saveColis(); });
 });
 
+loadHist();
 loadFromServer();
 </script>
 </body>
