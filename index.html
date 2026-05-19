@@ -891,6 +891,259 @@ body::after {
 }
 .hist-btn-clear:hover { background: rgba(239,68,68,.15); }
 
+
+/* ── QR MODAL ── */
+.qr-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(12px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.qr-bg.open { opacity: 1; pointer-events: all; }
+
+.qr-modal {
+  background: #0f0f18;
+  border: 1px solid rgba(16,185,129,.25);
+  border-radius: 28px;
+  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  animation: guideIn .3s cubic-bezier(.34,1.4,.64,1);
+  position: relative;
+}
+
+.qr-hdr {
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.qr-hdr-ico {
+  width: 46px; height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.qr-hdr-title {
+  font-size: 18px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, #34d399 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.qr-hdr-sub {
+  font-size: 11px; color: var(--text3);
+  font-family: 'Space Mono', monospace; margin-top: 3px;
+}
+.qr-hdr-close {
+  margin-left: auto; background: none; border: none;
+  color: var(--text3); font-size: 22px; cursor: pointer;
+  padding: 4px 8px; border-radius: 8px; transition: all .15s; line-height: 1;
+}
+.qr-hdr-close:hover { color: var(--text); background: var(--card); }
+
+.qr-body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr-frame {
+  background: white;
+  padding: 16px;
+  border-radius: 18px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-spinner {
+  width: 200px; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.qr-spinner-inner {
+  width: 28px; height: 28px;
+  border: 2px solid rgba(16,185,129,.2);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.qr-url {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  text-align: center;
+  word-break: break-all;
+  line-height: 1.6;
+  width: 100%;
+}
+
+.qr-legend {
+  width: 100%;
+  background: rgba(16,185,129,.05);
+  border: 1px solid rgba(16,185,129,.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qr-legend-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #34d399;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 4px;
+}
+
+.qr-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.qr-legend-row span:first-child { flex-shrink: 0; }
+
+/* ── GUIDE MODAL ── */
+.guide-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(12px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.guide-bg.open { opacity: 1; pointer-events: all; }
+
+.guide-modal {
+  background: #0f0f18;
+  border: 1px solid rgba(124,58,237,.25);
+  border-radius: 28px;
+  max-width: 540px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  animation: guideIn .3s cubic-bezier(.34,1.4,.64,1);
+  position: relative;
+}
+
+.guide-hdr {
+  padding: 26px 28px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.guide-hdr-ico {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.guide-hdr-title {
+  font-size: 19px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.guide-hdr-sub {
+  font-size: 11px; color: var(--text3);
+  font-family: 'Space Mono', monospace; margin-top:3px;
+}
+.guide-hdr-close {
+  margin-left:auto; background:none; border:none;
+  color:var(--text3); font-size:22px; cursor:pointer;
+  padding:4px 8px; border-radius:8px; transition:all .15s; line-height:1;
+}
+.guide-hdr-close:hover { color:var(--text); background:var(--card); }
+
+.guide-slides { flex:1; overflow:hidden; position:relative; }
+.guide-slide {
+  display:none; flex-direction:column; gap:16px;
+  padding:24px 28px; overflow-y:auto; max-height:50vh;
+}
+.guide-slide.active { display:flex; }
+
+.guide-slide-eyebrow {
+  font-family:'Space Mono',monospace; font-size:10px;
+  letter-spacing:3px; color:var(--text3); text-transform:uppercase;
+}
+.guide-slide-title { font-size:20px; font-weight:800; line-height:1.2; }
+.guide-slide-body { font-size:13px; color:var(--text2); line-height:1.85; }
+
+.guide-items {
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  display:flex; flex-direction:column; gap:13px;
+}
+.guide-item {
+  display:flex; align-items:flex-start; gap:12px;
+}
+.guide-item-ico {
+  font-size:19px; width:30px; text-align:center; flex-shrink:0; margin-top:1px;
+}
+.guide-item-text { font-size:13px; color:var(--text2); line-height:1.7; }
+.guide-item-text strong { color:var(--text); font-weight:700; }
+
+.guide-ftr {
+  padding:16px 28px;
+  border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:12px; flex-shrink:0;
+}
+.guide-dots { display:flex; gap:6px; flex:1; }
+.guide-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--border); transition:all .25s; cursor:pointer;
+}
+.guide-dot.active { width:22px; border-radius:3px; background:linear-gradient(90deg,var(--g1),var(--g2)); }
+.guide-nav { display:flex; gap:8px; }
+.gnav-btn {
+  padding:9px 18px; border-radius:10px; font-size:12px; font-weight:700;
+  cursor:pointer; border:none; font-family:'Syne',sans-serif;
+  transition:all .15s; letter-spacing:.3px; text-transform:uppercase;
+}
+.gnav-prev { background:var(--card); color:var(--text2); border:1px solid var(--border); }
+.gnav-prev:hover { background:var(--card-hover); }
+.gnav-next { background:linear-gradient(135deg,var(--g1),var(--g2)); color:white; box-shadow:0 4px 16px rgba(124,58,237,.3); }
+.gnav-next:hover { box-shadow:0 6px 24px rgba(124,58,237,.5); transform:translateY(-1px); }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .slot-actions { opacity: 1; transform: none; }
@@ -996,6 +1249,109 @@ body::after {
   </div>
 </div>
 
+<!-- QR MODAL -->
+<div class="qr-bg" id="qr-bg">
+  <div class="qr-modal">
+    <div class="qr-hdr">
+      <div class="qr-hdr-ico">⬛</div>
+      <div>
+        <div class="qr-hdr-title">QR Code</div>
+        <div class="qr-hdr-sub">RACK attente d'usinage — AUEM</div>
+      </div>
+      <button class="qr-hdr-close" onclick="closeQR()">✕</button>
+    </div>
+    <div class="qr-body">
+      <div class="qr-frame">
+        <div class="qr-spinner" id="qr-container">
+          <div class="qr-spinner-inner"></div>
+        </div>
+      </div>
+      <div class="qr-url" id="qr-url">Génération du QR code…</div>
+      <div class="qr-legend">
+        <div class="qr-legend-title">Comment utiliser</div>
+        <div class="qr-legend-row"><span>📱</span><span>Ouvrez l'appareil photo de votre téléphone</span></div>
+        <div class="qr-legend-row"><span>🎯</span><span>Pointez vers le QR code affiché</span></div>
+        <div class="qr-legend-row"><span>🔗</span><span>Cliquez sur la notification qui apparaît</span></div>
+        <div class="qr-legend-row"><span>✅</span><span>Vous arrivez directement sur cette page !</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDE MODAL -->
+<div class="guide-bg" id="guide-bg">
+  <div class="guide-modal">
+    <div class="guide-hdr">
+      <div class="guide-hdr-ico">📋</div>
+      <div>
+        <div class="guide-hdr-title">Guide d'utilisation</div>
+        <div class="guide-hdr-sub">RACK attente d'usinage — 4 étapes</div>
+      </div>
+      <button class="guide-hdr-close" onclick="closeGuide()">✕</button>
+    </div>
+
+    <div class="guide-slides">
+      <div class="guide-slide active" id="gslide-1">
+        <div class="guide-slide-eyebrow">Étape 1 / 4</div>
+        <div class="guide-slide-title">🗂️ Comprendre le rack</div>
+        <div class="guide-slide-body">Ce rack contient <strong>3 étages (A, B, C)</strong> avec <strong>3 emplacements chacun</strong>, soit 9 slots au total.</div>
+        <div class="guide-items">
+          <div class="guide-item"><div class="guide-item-ico">🟢</div><div class="guide-item-text"><strong>Étage A</strong> — Bas, niveau sol</div></div>
+          <div class="guide-item"><div class="guide-item-ico">🔵</div><div class="guide-item-text"><strong>Étage B</strong> — Milieu, accessible</div></div>
+          <div class="guide-item"><div class="guide-item-ico">🟣</div><div class="guide-item-text"><strong>Étage C</strong> — Haut, gerbeur si besoin</div></div>
+        </div>
+      </div>
+
+      <div class="guide-slide" id="gslide-2">
+        <div class="guide-slide-eyebrow">Étape 2 / 4</div>
+        <div class="guide-slide-title">➕ Ajouter un colis</div>
+        <div class="guide-slide-body">Enregistrez chaque colis en quelques secondes.</div>
+        <div class="guide-items">
+          <div class="guide-item"><div class="guide-item-ico">👆</div><div class="guide-item-text">Cliquez sur un slot vide</div></div>
+          <div class="guide-item"><div class="guide-item-ico">🔢</div><div class="guide-item-text">Entrez le <strong>N° Colis</strong></div></div>
+          <div class="guide-item"><div class="guide-item-ico">🏭</div><div class="guide-item-text">Entrez l'<strong>Entreprise</strong></div></div>
+          <div class="guide-item"><div class="guide-item-ico">📅</div><div class="guide-item-text">Sélectionnez la <strong>Date de fin</strong></div></div>
+        </div>
+      </div>
+
+      <div class="guide-slide" id="gslide-3">
+        <div class="guide-slide-eyebrow">Étape 3 / 4</div>
+        <div class="guide-slide-title">🔒 Marquer comme prêt</div>
+        <div class="guide-slide-body">Quand la feuille de suivi est complète, marquez-la comme prête.</div>
+        <div class="guide-items">
+          <div class="guide-item"><div class="guide-item-ico">🖱️</div><div class="guide-item-text">Passez la souris sur un colis</div></div>
+          <div class="guide-item"><div class="guide-item-ico">🔒</div><div class="guide-item-text">Cliquez <strong>colis prêt</strong></div></div>
+          <div class="guide-item"><div class="guide-item-ico">✅</div><div class="guide-item-text">Le slot devient vert</div></div>
+        </div>
+      </div>
+
+      <div class="guide-slide" id="gslide-4">
+        <div class="guide-slide-eyebrow">Étape 4 / 4</div>
+        <div class="guide-slide-title">📊 Historique & Export</div>
+        <div class="guide-slide-body">Consultez l'historique et exportez en PDF.</div>
+        <div class="guide-items">
+          <div class="guide-item"><div class="guide-item-ico">📊</div><div class="guide-item-text">Bouton <strong>Historique</strong> en haut</div></div>
+          <div class="guide-item"><div class="guide-item-ico">📥</div><div class="guide-item-text">Bouton <strong>Export PDF</strong> dans l'historique</div></div>
+          <div class="guide-item"><div class="guide-item-ico">🗑️</div><div class="guide-item-text">Effacer l'historique si besoin</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-ftr">
+      <div class="guide-dots" id="guide-dots">
+        <div class="guide-dot active" onclick="goGuide(1)"></div>
+        <div class="guide-dot" onclick="goGuide(2)"></div>
+        <div class="guide-dot" onclick="goGuide(3)"></div>
+        <div class="guide-dot" onclick="goGuide(4)"></div>
+      </div>
+      <div class="guide-nav">
+        <button class="gnav-btn gnav-prev" id="gnav-prev" onclick="stepGuide(-1)">← Préc.</button>
+        <button class="gnav-btn gnav-next" id="gnav-next" onclick="stepGuide(1)">Suiv. →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- HISTORIQUE MODAL -->
 <div class="hist-bg" id="hist-bg">
   <div class="hist-modal">
@@ -1030,6 +1386,75 @@ let currentSlot = null;
 let currentSealSlot = null;
 let saveTimer = null;
 let historique = [];
+
+/* ── QR CODE ── */
+function openQR() {
+  const url = window.location.href.split('?')[0];
+  document.getElementById('qr-url').textContent = url;
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '<div class="qr-spinner-inner"></div>';
+  document.getElementById('qr-bg').classList.add('open');
+  const img = new Image();
+  img.style.cssText = 'display:block;width:200px;height:200px;border-radius:4px;';
+  img.onload = () => { container.innerHTML = ''; container.appendChild(img); container.style.width='auto'; container.style.height='auto'; };
+  img.onerror = () => { container.innerHTML = '<div style="font-size:12px;color:#666;text-align:center;padding:20px;">Erreur chargement QR</div>'; };
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url) + '&bgcolor=ffffff&color=0a0a0f&margin=12';
+}
+
+function closeQR() {
+  document.getElementById('qr-bg').classList.remove('open');
+}
+
+document.getElementById('qr-bg').addEventListener('click', e => {
+  if (e.target.id === 'qr-bg') closeQR();
+});
+
+/* ── GUIDE ── */
+let guideSlide = 1;
+const GUIDE_TOTAL = 4;
+
+function openGuide() {
+  guideSlide = 1;
+  updateGuideSlide();
+  document.getElementById('guide-bg').classList.add('open');
+}
+
+function closeGuide() {
+  document.getElementById('guide-bg').classList.remove('open');
+}
+
+function goGuide(n) {
+  guideSlide = n;
+  updateGuideSlide();
+}
+
+function stepGuide(dir) {
+  guideSlide = Math.max(1, Math.min(GUIDE_TOTAL, guideSlide + dir));
+  updateGuideSlide();
+}
+
+function updateGuideSlide() {
+  for (let i = 1; i <= GUIDE_TOTAL; i++) {
+    document.getElementById('gslide-' + i).classList.toggle('active', i === guideSlide);
+  }
+  document.querySelectorAll('.guide-dot').forEach((d, i) => {
+    d.classList.toggle('active', i + 1 === guideSlide);
+  });
+  document.getElementById('gnav-prev').style.visibility = guideSlide === 1 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('gnav-next');
+  if (guideSlide === GUIDE_TOTAL) {
+    nextBtn.textContent = '✓ Fermer';
+    nextBtn.onclick = closeGuide;
+  } else {
+    nextBtn.textContent = 'Suiv. →';
+    nextBtn.onclick = () => stepGuide(1);
+  }
+}
+
+document.getElementById('guide-bg').addEventListener('click', e => {
+  if (e.target.id === 'guide-bg') closeGuide();
+});
+
 
 /* ── STATE ── */
 function initState() {
@@ -1394,6 +1819,7 @@ document.getElementById('modal-seal').addEventListener('click', e => { if (e.tar
 ['inp-ref','inp-company'].forEach(id => {
   document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') saveColis(); });
 });
+
 
 loadHist();
 loadFromServer();
