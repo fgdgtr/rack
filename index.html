@@ -1218,6 +1218,45 @@ body::after {
 }
 .v3d-controls strong { color: #fff; }
 
+
+.v3d-view-badge {
+  background: rgba(0,0,0,.6);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.v3d-snapbar {
+  position: absolute;
+  top: 70px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 6px;
+  z-index: 10;
+}
+
+.v3d-snap {
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 8px;
+  color: rgba(240,240,245,.75);
+  font-size: 11px; font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.v3d-snap:hover {
+  background: rgba(124,58,237,.4);
+  border-color: rgba(124,58,237,.6);
+  color: #fff;
+}
+
 .v3d-tooltip {
   position: absolute;
   background: rgba(13,13,20,.95);
@@ -1444,21 +1483,37 @@ body::after {
 <!-- 3D MODAL -->
 <div class="v3d-bg" id="v3d-bg">
   <canvas id="v3d-canvas"></canvas>
+
+  <!-- TOP BAR -->
   <div class="v3d-topbar">
-    <div class="v3d-title">🎮 Vue 3D — Rack Attente Usinage</div>
+    <div class="v3d-title">🎮 Vue 3D — Rack Usinage</div>
+    <div class="v3d-view-badge" id="v3d-view-label">⬆️ Vue de face</div>
     <button class="v3d-close" onclick="close3D()">✕</button>
   </div>
+
+  <!-- SNAP BUTTONS -->
+  <div class="v3d-snapbar">
+    <button id="v3d-btn-front" class="v3d-snap">⬆ Face</button>
+    <button id="v3d-btn-back"  class="v3d-snap">⬇ Arrière</button>
+    <button id="v3d-btn-left"  class="v3d-snap">⬅ Gauche</button>
+    <button id="v3d-btn-right" class="v3d-snap">➡ Droite</button>
+    <button id="v3d-btn-top"   class="v3d-snap">🔝 Dessus</button>
+  </div>
+
+  <!-- LEGEND -->
   <div class="v3d-legend">
-    <div class="v3d-leg-row"><div class="v3d-dot" style="background:#3a3a55"></div>Vide</div>
+    <div class="v3d-leg-row"><div class="v3d-dot" style="background:#1a1a2e;border:1px solid #333"></div>Vide</div>
     <div class="v3d-leg-row"><div class="v3d-dot" style="background:#f59e0b"></div>En suivi</div>
     <div class="v3d-leg-row"><div class="v3d-dot" style="background:#10b981"></div>Prêt</div>
   </div>
+
+  <!-- CONTROLS -->
   <div class="v3d-controls">
     <strong>Contrôles</strong><br>
     🖱 Glisse = Rotation<br>
-    🔄 Molette = Zoom
+    🔄 Molette = Zoom<br>
+    📱 Tactile supporté
   </div>
-  <div class="v3d-tooltip" id="v3d-tooltip"></div>
 </div>
 
 <!-- HISTORIQUE MODAL -->
@@ -1938,7 +1993,7 @@ document.getElementById('modal-seal').addEventListener('click', e => { if (e.tar
 /* ── 3D VIEW ── */
 var _3d = {
   renderer: null, scene: null, camera: null,
-  rack: null, slotMeshes: {}, animId: null,
+  slotMeshes: {}, animId: null,
   mouse: { x:0, y:0 }, isDragging: false,
   spherical: { theta: 0.5, phi: 1.0, radius: 7 }
 };
@@ -1955,12 +2010,22 @@ function close3D() {
   _3d.slotMeshes = {};
 }
 
+function getViewLabel() {
+  var sinT = Math.sin(_3d.spherical.theta);
+  var cosT = Math.cos(_3d.spherical.theta);
+  if (Math.abs(sinT) < 0.35) return cosT > 0 ? '⬆️ Vue de face' : '⬇️ Vue arrière';
+  if (Math.abs(cosT) < 0.35) return sinT > 0 ? '➡️ Vue côté droit' : '⬅️ Vue côté gauche';
+  if (sinT > 0 && cosT > 0) return '↗️ Avant-droite';
+  if (sinT > 0 && cosT < 0) return '↘️ Arrière-droite';
+  if (sinT < 0 && cosT > 0) return '↖️ Avant-gauche';
+  return '↙️ Arrière-gauche';
+}
+
 function setup3D() {
   var canvas = document.getElementById('v3d-canvas');
   var W = canvas.clientWidth, H = canvas.clientHeight;
 
-  /* ── RENDERER ── */
-  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true });
   renderer.setSize(W, H);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
@@ -1970,94 +2035,62 @@ function setup3D() {
   renderer.toneMappingExposure = 1.2;
   _3d.renderer = renderer;
 
-  /* ── SCENE ── */
   var scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x07070d, 0.025);
+  scene.fog = new THREE.FogExp2(0x07070d, 0.022);
   _3d.scene = scene;
 
-  /* ── CAMERA ── */
   var camera = new THREE.PerspectiveCamera(52, W/H, 0.1, 100);
   _3d.camera = camera;
   updateCamera();
 
-  /* ── LIGHTS ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-
+  /* Lights */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
   var sun = new THREE.DirectionalLight(0xffffff, 1.2);
-  sun.position.set(5, 10, 5);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
-  sun.shadow.camera.near = 0.5;
-  sun.shadow.camera.far = 30;
-  sun.shadow.camera.left = -5;
-  sun.shadow.camera.right = 5;
-  sun.shadow.camera.top = 6;
-  sun.shadow.camera.bottom = -2;
-  sun.shadow.bias = -0.001;
+  sun.position.set(5,10,5); sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  sun.shadow.camera.near=0.5; sun.shadow.camera.far=30;
+  sun.shadow.camera.left=-5; sun.shadow.camera.right=5;
+  sun.shadow.camera.top=6; sun.shadow.camera.bottom=-2;
+  sun.shadow.bias=-0.001;
   scene.add(sun);
+  var fill=new THREE.PointLight(0x7c3aed,0.6,15); fill.position.set(-4,4,2); scene.add(fill);
+  var fill2=new THREE.PointLight(0xdb2777,0.3,10); fill2.position.set(4,1,-3); scene.add(fill2);
 
-  var fill = new THREE.PointLight(0x7c3aed, 0.6, 15);
-  fill.position.set(-4, 4, 2);
-  scene.add(fill);
+  /* Floor */
+  var fl=new THREE.Mesh(new THREE.PlaneGeometry(12,12), new THREE.MeshStandardMaterial({color:0x0c0c18,roughness:0.9,metalness:0.1}));
+  fl.rotation.x=-Math.PI/2; fl.receiveShadow=true; scene.add(fl);
+  scene.add(new THREE.GridHelper(12,24,0x1a1a2e,0x111122));
 
-  var fill2 = new THREE.PointLight(0xdb2777, 0.3, 10);
-  fill2.position.set(4, 1, -3);
-  scene.add(fill2);
-
-  /* ── FLOOR ── */
-  var floorGeo = new THREE.PlaneGeometry(12, 12);
-  var floorMat = new THREE.MeshStandardMaterial({
-    color: 0x0c0c18, roughness: 0.9, metalness: 0.1
-  });
-  var floor = new THREE.Mesh(floorGeo, floorMat);
-  floor.rotation.x = -Math.PI/2;
-  floor.receiveShadow = true;
-  scene.add(floor);
-
-  var grid = new THREE.GridHelper(12, 24, 0x1a1a2e, 0x111122);
-  grid.position.y = 0.001;
-  scene.add(grid);
-
-  /* ── BUILD RACK ── */
   buildRack(scene);
 
-  /* ── CONTROLS ── */
-  canvas.addEventListener('mousedown', function(e) {
-    _3d.isDragging = true;
-    _3d.mouse.x = e.clientX;
-    _3d.mouse.y = e.clientY;
-  });
-  window.addEventListener('mouseup', function() { _3d.isDragging = false; });
-  window.addEventListener('mousemove', function(e) {
-    if (!_3d.isDragging) return;
-    _3d.spherical.theta -= (e.clientX - _3d.mouse.x) * 0.007;
-    _3d.spherical.phi = Math.max(0.25, Math.min(1.45, _3d.spherical.phi + (e.clientY - _3d.mouse.y) * 0.007));
-    _3d.mouse.x = e.clientX;
-    _3d.mouse.y = e.clientY;
+  /* Mouse */
+  canvas.addEventListener('mousedown',function(e){ _3d.isDragging=true; _3d.mouse.x=e.clientX; _3d.mouse.y=e.clientY; });
+  window.addEventListener('mouseup',function(){ _3d.isDragging=false; });
+  window.addEventListener('mousemove',function(e){
+    if(!_3d.isDragging) return;
+    _3d.spherical.theta-=(e.clientX-_3d.mouse.x)*0.007;
+    _3d.spherical.phi=Math.max(0.25,Math.min(1.45,_3d.spherical.phi+(e.clientY-_3d.mouse.y)*0.007));
+    _3d.mouse.x=e.clientX; _3d.mouse.y=e.clientY;
     updateCamera();
   });
-  canvas.addEventListener('wheel', function(e) {
+  canvas.addEventListener('wheel',function(e){
     e.preventDefault();
-    _3d.spherical.radius = Math.max(3.5, Math.min(14, _3d.spherical.radius + e.deltaY * 0.012));
+    _3d.spherical.radius=Math.max(3.5,Math.min(14,_3d.spherical.radius+e.deltaY*0.012));
     updateCamera();
-  }, { passive: false });
-
-  // Touch
-  var t0 = null;
-  canvas.addEventListener('touchstart', function(e){ if(e.touches.length===1) t0={x:e.touches[0].clientX,y:e.touches[0].clientY}; }, {passive:true});
-  canvas.addEventListener('touchmove', function(e){
+  },{passive:false});
+  var t0=null;
+  canvas.addEventListener('touchstart',function(e){ if(e.touches.length===1) t0={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+  canvas.addEventListener('touchmove',function(e){
     e.preventDefault();
     if(e.touches.length===1&&t0){
-      _3d.spherical.theta -= (e.touches[0].clientX-t0.x)*0.009;
+      _3d.spherical.theta-=(e.touches[0].clientX-t0.x)*0.009;
       _3d.spherical.phi=Math.max(0.25,Math.min(1.45,_3d.spherical.phi+(e.touches[0].clientY-t0.y)*0.009));
       t0={x:e.touches[0].clientX,y:e.touches[0].clientY};
       updateCamera();
     }
-  }, {passive:false});
-  canvas.addEventListener('touchend', function(){ t0=null; }, {passive:true});
-
-  // Resize
-  window.addEventListener('resize', function(){
+  },{passive:false});
+  canvas.addEventListener('touchend',function(){ t0=null; },{passive:true});
+  window.addEventListener('resize',function(){
     if(!_3d.renderer) return;
     var W=canvas.clientWidth, H=canvas.clientHeight;
     _3d.renderer.setSize(W,H);
@@ -2065,205 +2098,137 @@ function setup3D() {
     _3d.camera.updateProjectionMatrix();
   });
 
-  /* ── RENDER LOOP ── */
+  /* Snap buttons */
+  document.getElementById('v3d-btn-front').onclick = function(){
+    _3d.spherical.theta=0; _3d.spherical.phi=1.0; updateCamera();
+  };
+  document.getElementById('v3d-btn-back').onclick = function(){
+    _3d.spherical.theta=Math.PI; _3d.spherical.phi=1.0; updateCamera();
+  };
+  document.getElementById('v3d-btn-left').onclick = function(){
+    _3d.spherical.theta=-Math.PI/2; _3d.spherical.phi=1.0; updateCamera();
+  };
+  document.getElementById('v3d-btn-right').onclick = function(){
+    _3d.spherical.theta=Math.PI/2; _3d.spherical.phi=1.0; updateCamera();
+  };
+  document.getElementById('v3d-btn-top').onclick = function(){
+    _3d.spherical.phi=0.15; updateCamera();
+  };
+
+  /* Render loop */
   function loop() {
-    _3d.animId = requestAnimationFrame(loop);
-    if (!_3d.isDragging) {
-      _3d.spherical.theta += 0.0015;
-      updateCamera();
-    }
-    renderer.render(scene, camera);
+    _3d.animId=requestAnimationFrame(loop);
+    if(!_3d.isDragging){ _3d.spherical.theta+=0.0015; updateCamera(); }
+    var lbl=document.getElementById('v3d-view-label');
+    if(lbl) lbl.textContent=getViewLabel();
+    var t=Date.now()*0.002;
+    Object.keys(_3d.slotMeshes).forEach(function(id){
+      var entry=_3d.slotMeshes[id]; var s=state[id];
+      if(s&&s.colis&&!s.sealed) entry.mesh.material.emissiveIntensity=0.25+0.15*Math.sin(t+entry.phase);
+    });
+    renderer.render(scene,camera);
   }
   loop();
 }
 
 function buildRack(scene) {
-  /* ──────────────────────────────────────────────
-     CONVENTION : vue AVANT = côté positif Z
-     Numérotation slots 1,2,3 = gauche→droite (X-)→(X+)
-     Étages A=bas, B=milieu, C=haut
-  ────────────────────────────────────────────── */
+  var RACK_W=2.9,RACK_D=1.1,SHELF_H=0.06,PILLAR=0.07,LEVEL_H=1.0,SLOT_W=0.82,SLOT_D=0.85,SLOT_H=0.55;
+  var hw=RACK_W/2, hd=RACK_D/2;
 
-  var RACK_W  = 2.9;   // largeur totale
-  var RACK_D  = 1.1;   // profondeur totale
-  var SHELF_H = 0.06;  // épaisseur plancher
-  var PILLAR  = 0.07;  // section pilier
-  var LEVEL_H = 1.0;   // hauteur entre niveaux
-  var SLOT_W  = 0.82;  // largeur d'un slot
-  var SLOT_D  = 0.85;  // profondeur d'un slot
-  var SLOT_H  = 0.55;  // hauteur du colis
-
-  /* demi-dimensions */
-  var hw = RACK_W / 2;
-  var hd = RACK_D / 2;
-
-  /* mats */
-  function stdMat(hex, emHex, rough, metal) {
-    return new THREE.MeshStandardMaterial({
-      color: hex, emissive: emHex||0, roughness: rough!==undefined?rough:0.65, metalness: metal!==undefined?metal:0.4
-    });
+  function stdMat(hex,emHex,rough,metal){
+    return new THREE.MeshStandardMaterial({color:hex,emissive:emHex||0,roughness:rough!==undefined?rough:0.65,metalness:metal!==undefined?metal:0.4});
   }
+  var steelMat=stdMat(0x1e2030,0,0.7,0.6);
+  var shelfMats=[stdMat(0x0a4d32,0x011a0e,0.5,0.35),stdMat(0x0d2a6b,0x040e28,0.5,0.35),stdMat(0x3b1466,0x12041e,0.5,0.35)];
+  var edgeCols=[0x10b981,0x3b82f6,0x7c3aed];
 
-  var steelMat  = stdMat(0x1e2030, 0, 0.7, 0.6);
-  var shelfMats = [
-    stdMat(0x0a4d32, 0x011a0e, 0.5, 0.35),  // A vert
-    stdMat(0x0d2a6b, 0x040e28, 0.5, 0.35),  // B bleu
-    stdMat(0x3b1466, 0x12041e, 0.5, 0.35),  // C violet
-  ];
-
-  /* ── PILIERS (4 coins) ── */
-  var pilGeo = new THREE.BoxGeometry(PILLAR, 3.5, PILLAR);
-  [[-hw, 1.75, -hd],[-hw, 1.75, hd],[hw, 1.75, -hd],[hw, 1.75, hd]].forEach(function(p){
-    var m = new THREE.Mesh(pilGeo, steelMat);
-    m.position.set(p[0],p[1],p[2]);
-    m.castShadow = true;
-    scene.add(m);
+  /* Pillars */
+  var pilGeo=new THREE.BoxGeometry(PILLAR,3.5,PILLAR);
+  [[-hw,1.75,-hd],[-hw,1.75,hd],[hw,1.75,-hd],[hw,1.75,hd]].forEach(function(p){
+    var m=new THREE.Mesh(pilGeo,steelMat); m.position.set(p[0],p[1],p[2]); m.castShadow=true; scene.add(m);
   });
 
-  /* ── TRAVERSES H (avant + arrière, chaque niveau) ── */
-  var trGeo = new THREE.BoxGeometry(RACK_W - PILLAR, PILLAR, PILLAR);
-  [0.05, 1.05, 2.05, 3.1].forEach(function(y){
-    [-hd, hd].forEach(function(z){
-      var m = new THREE.Mesh(trGeo, steelMat);
-      m.position.set(0, y, z);
-      scene.add(m);
-    });
+  /* H beams */
+  var trGeo=new THREE.BoxGeometry(RACK_W-PILLAR,PILLAR,PILLAR);
+  [0.05,1.05,2.05,3.1].forEach(function(y){
+    [-hd,hd].forEach(function(z){ var m=new THREE.Mesh(trGeo,steelMat); m.position.set(0,y,z); scene.add(m); });
   });
 
-  /* ── TRAVERSES latérales ── */
-  var latGeo = new THREE.BoxGeometry(PILLAR, PILLAR, RACK_D - PILLAR);
-  [0.05, 1.05, 2.05, 3.1].forEach(function(y){
-    [-hw, hw].forEach(function(x){
-      var m = new THREE.Mesh(latGeo, steelMat);
-      m.position.set(x, y, 0);
-      scene.add(m);
-    });
+  /* Lat beams */
+  var latGeo=new THREE.BoxGeometry(PILLAR,PILLAR,RACK_D-PILLAR);
+  [0.05,1.05,2.05,3.1].forEach(function(y){
+    [-hw,hw].forEach(function(x){ var m=new THREE.Mesh(latGeo,steelMat); m.position.set(x,y,0); scene.add(m); });
   });
 
-  /* ── DIAGONALES décoratives ── */
-  [0,1,2].forEach(function(li){
-    var y1 = 0.05 + li * LEVEL_H;
-    var y2 = y1 + LEVEL_H;
-    var pts = [new THREE.Vector3(-hw, y1, -hd), new THREE.Vector3(hw, y2, -hd)];
-    var lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
-    var lineMat = new THREE.LineBasicMaterial({ color: 0x2a2a44, transparent: true, opacity: 0.5 });
-    scene.add(new THREE.Line(lineGeo, lineMat));
-  });
+  /* Shelves + colis */
+  _3d.slotMeshes={};
+  ['A','B','C'].forEach(function(etage,li){
+    var yBase=0.05+li*LEVEL_H;
 
-  /* ── PLANCHERS + SLOTS ── */
-  /*  A = level 0 (bas) → yBase = 0.05 + 0*1.0 = 0.05
-      B = level 1 (mid) → yBase = 0.05 + 1*1.0 = 1.05
-      C = level 2 (haut)→ yBase = 0.05 + 2*1.0 = 2.05
-  */
-  _3d.slotMeshes = {};
+    /* shelf */
+    var plan=new THREE.Mesh(new THREE.BoxGeometry(RACK_W-PILLAR,SHELF_H,RACK_D-PILLAR),shelfMats[li]);
+    plan.position.set(0,yBase+SHELF_H/2,0); plan.receiveShadow=true; plan.castShadow=true; scene.add(plan);
 
-  ['A','B','C'].forEach(function(etage, li){
-    var yBase = 0.05 + li * LEVEL_H;
+    /* glowing front edge */
+    var edge=new THREE.Mesh(new THREE.BoxGeometry(RACK_W-PILLAR,0.025,0.025),
+      new THREE.MeshStandardMaterial({color:edgeCols[li],emissive:edgeCols[li],emissiveIntensity:0.9}));
+    edge.position.set(0,yBase+SHELF_H+0.01,hd-0.02); scene.add(edge);
 
-    /* plancher */
-    var planGeo = new THREE.BoxGeometry(RACK_W - PILLAR, SHELF_H, RACK_D - PILLAR);
-    var plan = new THREE.Mesh(planGeo, shelfMats[li]);
-    plan.position.set(0, yBase + SHELF_H/2, 0);
-    plan.receiveShadow = true;
-    plan.castShadow = true;
-    scene.add(plan);
+    /* label tag */
+    var tag=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.2,0.03),
+      new THREE.MeshStandardMaterial({color:edgeCols[li],emissive:edgeCols[li],emissiveIntensity:0.7}));
+    tag.position.set(-hw-0.1,yBase+0.22,0); scene.add(tag);
 
-    /* étiquette étage */
-    var tagGeo = new THREE.BoxGeometry(0.14, 0.22, 0.04);
-    var tagMat = new THREE.MeshStandardMaterial({ color: shelfMats[li].color, emissive: shelfMats[li].color, emissiveIntensity: 0.5 });
-    var tag = new THREE.Mesh(tagGeo, tagMat);
-    tag.position.set(-hw - 0.12, yBase + 0.25, 0);
-    scene.add(tag);
-
-    /* séparateurs verticaux entre slots */
+    /* separators */
     [1,2].forEach(function(sep){
-      var sepGeo = new THREE.BoxGeometry(0.04, SLOT_H + 0.1, SLOT_D + 0.05);
-      var sm = new THREE.Mesh(sepGeo, steelMat);
-      /* slot 1|2 séparateur à x = -hw + SLOT_W - PILLAR/2 */
-      var sepX = -hw + PILLAR/2 + sep * SLOT_W;
-      sm.position.set(sepX, yBase + SHELF_H + (SLOT_H + 0.1)/2, 0);
-      scene.add(sm);
+      var sm=new THREE.Mesh(new THREE.BoxGeometry(0.04,SLOT_H+0.12,SLOT_D+0.05),steelMat);
+      sm.position.set(-hw+PILLAR/2+sep*SLOT_W,yBase+SHELF_H+(SLOT_H+0.12)/2,0); scene.add(sm);
     });
 
-    /* ── COLIS dans chaque slot ──
-       slots numérotés 1,2,3 gauche→droite = X négatif→X positif
-       xCenter slot i (0-based) = -hw + PILLAR/2 + SLOT_W/2 + i*SLOT_W
-    */
-    for (var i = 0; i < 3; i++) {
-      var slotNum = i + 1;  /* 1,2,3 */
-      var id = etage + slotNum;
-      var xCenter = -hw + PILLAR/2 + SLOT_W/2 + i * SLOT_W;
-      var yCenter = yBase + SHELF_H + SLOT_H/2 + 0.02;
-
-      var s = state[id];
-      var isEmpty   = !s || !s.colis;
-      var isSealed  = s && s.sealed;
-
-      var col = isEmpty ? 0x222236 : (isSealed ? 0x10b981 : 0xf59e0b);
-      var em  = isEmpty ? 0x000000 : (isSealed ? 0x062e1c : 0x422800);
-      var cGeo = new THREE.BoxGeometry(SLOT_W - 0.06, isEmpty ? 0.05 : SLOT_H, SLOT_D - 0.06);
-      var cMat = stdMat(col, em, 0.5, 0.05);
-      var colis = new THREE.Mesh(cGeo, cMat);
-      colis.position.set(xCenter, isEmpty ? yBase + SHELF_H + 0.025 : yCenter, 0);
-      colis.castShadow = true;
-      colis.receiveShadow = true;
-      colis.userData = { id: id };
-      scene.add(colis);
-      _3d.slotMeshes[id] = { mesh: colis, yBase: yBase, SHELF_H: SHELF_H, SLOT_H: SLOT_H };
+    /* colis slots — 1=LEFT(X-), 2=CENTER, 3=RIGHT(X+) */
+    for(var i=0;i<3;i++){
+      var id=etage+(i+1);
+      var xCenter=-hw+PILLAR/2+SLOT_W/2+i*SLOT_W;
+      var s=state[id];
+      var isEmpty=!s||!s.colis, isSealed=s&&s.sealed;
+      var col=isEmpty?0x1a1a2e:(isSealed?0x10b981:0xf59e0b);
+      var em=isEmpty?0x000000:(isSealed?0x062e1c:0x422800);
+      var cGeo=new THREE.BoxGeometry(SLOT_W-0.06,isEmpty?0.04:SLOT_H,SLOT_D-0.06);
+      var cMat=stdMat(col,em,0.5,0.05);
+      cMat.emissiveIntensity=isEmpty?0:0.3;
+      var colis=new THREE.Mesh(cGeo,cMat);
+      colis.position.set(xCenter,isEmpty?yBase+SHELF_H+0.02:yBase+SHELF_H+SLOT_H/2+0.02,0);
+      colis.castShadow=true; colis.receiveShadow=true; scene.add(colis);
+      _3d.slotMeshes[id]={mesh:colis,yBase:yBase,SHELF_H:SHELF_H,SLOT_H:SLOT_H,phase:i*0.7+li*1.3};
     }
-  });
 
-  /* petites lumières LED sous chaque plancher */
-  ['A','B','C'].forEach(function(etage, li){
-    var yBase = 0.05 + li * LEVEL_H;
-    var ledColors = [0x10b981, 0x3b82f6, 0x7c3aed];
-    var led = new THREE.PointLight(ledColors[li], 0.25, 2);
-    led.position.set(0, yBase + 0.5, 0);
-    scene.add(led);
+    /* LED */
+    var led=new THREE.PointLight(edgeCols[li],0.3,2.5); led.position.set(0,yBase+0.5,0); scene.add(led);
   });
 }
 
-function updateCamera() {
-  var s = _3d.spherical;
-  var x = s.radius * Math.sin(s.phi) * Math.sin(s.theta);
-  var y = s.radius * Math.cos(s.phi) + 1.5;
-  var z = s.radius * Math.sin(s.phi) * Math.cos(s.theta);
-  if (_3d.camera) {
-    _3d.camera.position.set(x, y, z);
-    _3d.camera.lookAt(0, 1.5, 0);
-    _3d.camera.updateProjectionMatrix();
-  }
+function updateCamera(){
+  var s=_3d.spherical;
+  var x=s.radius*Math.sin(s.phi)*Math.sin(s.theta);
+  var y=s.radius*Math.cos(s.phi)+1.5;
+  var z=s.radius*Math.sin(s.phi)*Math.cos(s.theta);
+  if(_3d.camera){ _3d.camera.position.set(x,y,z); _3d.camera.lookAt(0,1.5,0); _3d.camera.updateProjectionMatrix(); }
 }
 
-function refresh3DColors() {
+function refresh3DColors(){
   Object.keys(_3d.slotMeshes).forEach(function(id){
-    var entry  = _3d.slotMeshes[id];
-    var mesh   = entry.mesh;
-    var s      = state[id];
-    var isEmpty  = !s || !s.colis;
-    var isSealed = s && s.sealed;
-    var col = isEmpty ? 0x222236 : (isSealed ? 0x10b981 : 0xf59e0b);
-    var em  = isEmpty ? 0x000000 : (isSealed ? 0x062e1c : 0x422800);
-    mesh.material.color.setHex(col);
-    mesh.material.emissive.setHex(em);
-    /* ajuster la hauteur */
-    var yBase   = entry.yBase;
-    var SHELF_H = entry.SHELF_H;
-    var SLOT_H  = entry.SLOT_H;
-    var SLOT_W  = 0.82;
-    if (isEmpty) {
-      mesh.scale.y = 0.09 / SLOT_H;
-      mesh.position.y = yBase + SHELF_H + 0.025;
-    } else {
-      mesh.scale.y = 1;
-      mesh.position.y = yBase + SHELF_H + SLOT_H/2 + 0.02;
-    }
+    var entry=_3d.slotMeshes[id], mesh=entry.mesh, s=state[id];
+    var isEmpty=!s||!s.colis, isSealed=s&&s.sealed;
+    mesh.material.color.setHex(isEmpty?0x1a1a2e:(isSealed?0x10b981:0xf59e0b));
+    mesh.material.emissive.setHex(isEmpty?0x000000:(isSealed?0x062e1c:0x422800));
+    mesh.material.emissiveIntensity=isEmpty?0:0.3;
+    var SLOT_H=entry.SLOT_H,SHELF_H=entry.SHELF_H,yBase=entry.yBase;
+    if(isEmpty){ mesh.scale.set(1,0.04/SLOT_H,1); mesh.position.y=yBase+SHELF_H+0.02; }
+    else{ mesh.scale.set(1,1,1); mesh.position.y=yBase+SHELF_H+SLOT_H/2+0.02; }
   });
 }
 
-document.getElementById('v3d-bg').addEventListener('click', function(e){
-  if(e.target.id==='v3d-bg') close3D();
-});
+document.getElementById('v3d-bg').addEventListener('click',function(e){ if(e.target.id==='v3d-bg') close3D(); });
 
 loadHist();
 loadFromServer();
