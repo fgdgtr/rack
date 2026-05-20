@@ -2158,10 +2158,12 @@ function setup3D() {
   buildRack(scene);
 
   /* Mouse */
-  canvas.addEventListener('mousedown',function(e){ _3d.isDragging=true; _3d.mouse.x=e.clientX; _3d.mouse.y=e.clientY; });
+  _3d.movedSinceDown = false;
+  canvas.addEventListener('mousedown',function(e){ _3d.isDragging=true; _3d.movedSinceDown=false; _3d.mouse.x=e.clientX; _3d.mouse.y=e.clientY; });
   window.addEventListener('mouseup',function(){ _3d.isDragging=false; });
   window.addEventListener('mousemove',function(e){
     if(!_3d.isDragging) return;
+    _3d.movedSinceDown=true;
     _3d.spherical.theta-=(e.clientX-_3d.mouse.x)*0.007;
     _3d.spherical.phi=Math.max(0.25,Math.min(1.45,_3d.spherical.phi+(e.clientY-_3d.mouse.y)*0.007));
     _3d.mouse.x=e.clientX; _3d.mouse.y=e.clientY;
@@ -2215,7 +2217,7 @@ function setup3D() {
   var mouse2d = new THREE.Vector2();
 
   canvas.addEventListener('click', function(e) {
-    if (_3d.isDragging) return;
+    if (_3d.movedSinceDown) return;
     var rect = canvas.getBoundingClientRect();
     mouse2d.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse2d.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -2314,7 +2316,9 @@ function buildRack(scene) {
       cMat.emissiveIntensity=isEmpty?0:0.3;
       var colis=new THREE.Mesh(cGeo,cMat);
       colis.position.set(xCenter,isEmpty?yBase+SHELF_H+0.02:yBase+SHELF_H+SLOT_H/2+0.02,0);
-      colis.castShadow=true; colis.receiveShadow=true; scene.add(colis);
+      colis.castShadow=true; colis.receiveShadow=true;
+      colis.userData = { id: id };
+      scene.add(colis);
       _3d.slotMeshes[id]={mesh:colis,yBase:yBase,SHELF_H:SHELF_H,SLOT_H:SLOT_H,phase:i*0.7+li*1.3};
     }
 
