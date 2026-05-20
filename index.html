@@ -1764,6 +1764,7 @@ function saveColis() {
   addHist('added', currentSlot, ref, company);
   closeFormModal();
   render();
+  refresh3DColors();
   scheduleSave();
   showToast(isNew ? 'Colis ajouté !' : 'Modifications enregistrées', isNew ? '📦' : '✏️');
 }
@@ -1787,6 +1788,7 @@ function confirmSeal() {
   addHist('sealed', currentSealSlot, c.ref, c.company);
   closeSealModal();
   render();
+  refresh3DColors();
   scheduleSave();
   showToast('Colis prêt pour usinage', '🔒');
 }
@@ -1798,6 +1800,7 @@ function deleteColis(id) {
   addHist('deleted', id, c ? c.ref : '—', c ? c.company : '—');
   state[id] = { colis: null, sealed: false };
   render();
+  refresh3DColors();
   scheduleSave();
   showToast('Colis supprimé', '🗑️');
 }
@@ -1937,7 +1940,7 @@ var _3d = {
   renderer: null, scene: null, camera: null,
   rack: null, slotMeshes: {}, animId: null,
   mouse: { x:0, y:0 }, isDragging: false,
-  spherical: { theta: 0.6, phi: 1.1, radius: 6 }
+  spherical: { theta: 0.5, phi: 1.0, radius: 7 }
 };
 
 function open3D() {
@@ -1949,156 +1952,76 @@ function close3D() {
   document.getElementById('v3d-bg').classList.remove('open');
   if (_3d.animId) { cancelAnimationFrame(_3d.animId); _3d.animId = null; }
   if (_3d.renderer) { _3d.renderer.dispose(); _3d.renderer = null; }
+  _3d.slotMeshes = {};
 }
 
 function setup3D() {
   var canvas = document.getElementById('v3d-canvas');
   var W = canvas.clientWidth, H = canvas.clientHeight;
 
-  // Renderer
+  /* ── RENDERER ── */
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
   renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setClearColor(0x07070d);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
   _3d.renderer = renderer;
 
-  // Scene
+  /* ── SCENE ── */
   var scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x07070d, 0.025);
   _3d.scene = scene;
 
-  // Fog
-  scene.fog = new THREE.FogExp2(0x07070d, 0.04);
-
-  // Camera
-  var camera = new THREE.PerspectiveCamera(55, W/H, 0.1, 100);
+  /* ── CAMERA ── */
+  var camera = new THREE.PerspectiveCamera(52, W/H, 0.1, 100);
   _3d.camera = camera;
   updateCamera();
 
-  // Lights
-  var ambient = new THREE.AmbientLight(0xffffff, 0.5);
-  scene.add(ambient);
+  /* ── LIGHTS ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
-  var dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-  dirLight.position.set(6, 8, 5);
-  dirLight.castShadow = true;
-  dirLight.shadow.mapSize.set(1024,1024);
-  scene.add(dirLight);
+  var sun = new THREE.DirectionalLight(0xffffff, 1.2);
+  sun.position.set(5, 10, 5);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.near = 0.5;
+  sun.shadow.camera.far = 30;
+  sun.shadow.camera.left = -5;
+  sun.shadow.camera.right = 5;
+  sun.shadow.camera.top = 6;
+  sun.shadow.camera.bottom = -2;
+  sun.shadow.bias = -0.001;
+  scene.add(sun);
 
-  var fillLight = new THREE.PointLight(0xa78bfa, 0.5, 20);
-  fillLight.position.set(-4, 3, -2);
-  scene.add(fillLight);
+  var fill = new THREE.PointLight(0x7c3aed, 0.6, 15);
+  fill.position.set(-4, 4, 2);
+  scene.add(fill);
 
-  // Ground grid
-  var grid = new THREE.GridHelper(10, 20, 0x222233, 0x151522);
-  grid.position.y = -0.01;
-  scene.add(grid);
+  var fill2 = new THREE.PointLight(0xdb2777, 0.3, 10);
+  fill2.position.set(4, 1, -3);
+  scene.add(fill2);
 
-  // Build rack
-  var rack = new THREE.Group();
-  scene.add(rack);
-  _3d.rack = rack;
-
-  // Material helpers
-  function mat(color, emissive, rough, metal) {
-    return new THREE.MeshStandardMaterial({
-      color: color, emissive: emissive || 0x000000,
-      roughness: rough !== undefined ? rough : 0.6,
-      metalness: metal !== undefined ? metal : 0.3
-    });
-  }
-
-  // Structure frame color
-  var frameMat = mat(0x1e1e30, 0x000000, 0.8, 0.5);
-
-  // 4 piliers
-  var pillarGeo = new THREE.BoxGeometry(0.08, 3.2, 0.08);
-  [[-1.35,-0.55],[-1.35,0.55],[1.35,-0.55],[1.35,0.55]].forEach(function(p) {
-    var m = new THREE.Mesh(pillarGeo, frameMat);
-    m.position.set(p[0], 1.6, p[1]);
-    m.castShadow = true;
-    rack.add(m);
+  /* ── FLOOR ── */
+  var floorGeo = new THREE.PlaneGeometry(12, 12);
+  var floorMat = new THREE.MeshStandardMaterial({
+    color: 0x0c0c18, roughness: 0.9, metalness: 0.1
   });
-
-  // Traverses horizontales
-  var crossGeo = new THREE.BoxGeometry(2.78, 0.06, 0.06);
-  [0.2, 1.15, 2.1, 3.15].forEach(function(y) {
-    [-0.55, 0.55].forEach(function(z) {
-      var m = new THREE.Mesh(crossGeo, frameMat);
-      m.position.set(0, y, z);
-      rack.add(m);
-    });
-  });
-
-  // Traverses latérales
-  var latGeo = new THREE.BoxGeometry(0.06, 0.06, 1.16);
-  [0.2, 1.15, 2.1, 3.15].forEach(function(y) {
-    [-1.35, 1.35].forEach(function(x) {
-      var m = new THREE.Mesh(latGeo, frameMat);
-      m.position.set(x, y, 0);
-      rack.add(m);
-    });
-  });
-
-  // Planchers et colis par étage
-  var etageColors = [0x059669, 0x2563eb, 0x7c3aed];
-  var etageEmissive = [0x012c1a, 0x061430, 0x1e0b3a];
-
-  _3d.slotMeshes = {};
-  ['C','B','A'].forEach(function(etage, li) {
-    var yBase = 0.2 + li * 0.95;
-
-    // Plancher
-    var planGeo = new THREE.BoxGeometry(2.76, 0.07, 1.16);
-    var planMat = mat(etageColors[li], etageEmissive[li], 0.5, 0.4);
-    var plan = new THREE.Mesh(planGeo, planMat);
-    plan.position.set(0, yBase, 0);
-    plan.receiveShadow = true;
-    rack.add(plan);
-
-    // Étiquette étage (petit panneau)
-    var tagGeo = new THREE.BoxGeometry(0.18, 0.18, 0.02);
-    var tagMat = mat(etageColors[li], etageColors[li], 0.3, 0.2);
-    var tag = new THREE.Mesh(tagGeo, tagMat);
-    tag.position.set(-1.5, yBase + 0.35, 0);
-    rack.add(tag);
-
-    // 3 slots
-    for (var i = 0; i < 3; i++) {
-      var id = etage + (i+1);
-      var xPos = -0.88 + i * 0.88;
-      var colisGeo = new THREE.BoxGeometry(0.75, 0.55, 0.9);
-      var s = state[id];
-      var col = !s || !s.colis ? 0x2a2a3e : (s.sealed ? 0x10b981 : 0xf59e0b);
-      var em  = !s || !s.colis ? 0x000000 : (s.sealed ? 0x034a2c : 0x5a3800);
-      var cMat = mat(col, em, 0.5, 0.1);
-      var colis = new THREE.Mesh(colisGeo, cMat);
-      colis.position.set(xPos, yBase + 0.35, 0);
-      colis.castShadow = true;
-      colis.userData = { id: id };
-      rack.add(colis);
-      _3d.slotMeshes[id] = colis;
-
-      // Trait de séparation entre slots
-      if (i < 2) {
-        var sepGeo = new THREE.BoxGeometry(0.03, 0.6, 1.16);
-        var sep = new THREE.Mesh(sepGeo, frameMat);
-        sep.position.set(xPos + 0.44, yBase + 0.35, 0);
-        rack.add(sep);
-      }
-    }
-  });
-
-  // Sol
-  var floorGeo = new THREE.PlaneGeometry(10, 10);
-  var floorMat = new THREE.MeshStandardMaterial({ color: 0x0d0d1a, roughness: 1 });
   var floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI/2;
-  floor.position.y = -0.02;
   floor.receiveShadow = true;
   scene.add(floor);
 
-  // Mouse controls
+  var grid = new THREE.GridHelper(12, 24, 0x1a1a2e, 0x111122);
+  grid.position.y = 0.001;
+  scene.add(grid);
+
+  /* ── BUILD RACK ── */
+  buildRack(scene);
+
+  /* ── CONTROLS ── */
   canvas.addEventListener('mousedown', function(e) {
     _3d.isDragging = true;
     _3d.mouse.x = e.clientX;
@@ -2107,58 +2030,197 @@ function setup3D() {
   window.addEventListener('mouseup', function() { _3d.isDragging = false; });
   window.addEventListener('mousemove', function(e) {
     if (!_3d.isDragging) return;
-    var dx = e.clientX - _3d.mouse.x;
-    var dy = e.clientY - _3d.mouse.y;
+    _3d.spherical.theta -= (e.clientX - _3d.mouse.x) * 0.007;
+    _3d.spherical.phi = Math.max(0.25, Math.min(1.45, _3d.spherical.phi + (e.clientY - _3d.mouse.y) * 0.007));
     _3d.mouse.x = e.clientX;
     _3d.mouse.y = e.clientY;
-    _3d.spherical.theta -= dx * 0.008;
-    _3d.spherical.phi = Math.max(0.3, Math.min(1.5, _3d.spherical.phi + dy * 0.008));
     updateCamera();
   });
   canvas.addEventListener('wheel', function(e) {
     e.preventDefault();
-    _3d.spherical.radius = Math.max(3, Math.min(12, _3d.spherical.radius + e.deltaY * 0.01));
+    _3d.spherical.radius = Math.max(3.5, Math.min(14, _3d.spherical.radius + e.deltaY * 0.012));
     updateCamera();
   }, { passive: false });
 
   // Touch
-  var lastTouch = null;
-  canvas.addEventListener('touchstart', function(e) {
-    if (e.touches.length === 1) lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  });
-  canvas.addEventListener('touchmove', function(e) {
+  var t0 = null;
+  canvas.addEventListener('touchstart', function(e){ if(e.touches.length===1) t0={x:e.touches[0].clientX,y:e.touches[0].clientY}; }, {passive:true});
+  canvas.addEventListener('touchmove', function(e){
     e.preventDefault();
-    if (e.touches.length === 1 && lastTouch) {
-      var dx = e.touches[0].clientX - lastTouch.x;
-      var dy = e.touches[0].clientY - lastTouch.y;
-      lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      _3d.spherical.theta -= dx * 0.01;
-      _3d.spherical.phi = Math.max(0.3, Math.min(1.5, _3d.spherical.phi + dy * 0.01));
+    if(e.touches.length===1&&t0){
+      _3d.spherical.theta -= (e.touches[0].clientX-t0.x)*0.009;
+      _3d.spherical.phi=Math.max(0.25,Math.min(1.45,_3d.spherical.phi+(e.touches[0].clientY-t0.y)*0.009));
+      t0={x:e.touches[0].clientX,y:e.touches[0].clientY};
       updateCamera();
     }
-  }, { passive: false });
-  canvas.addEventListener('touchend', function() { lastTouch = null; });
+  }, {passive:false});
+  canvas.addEventListener('touchend', function(){ t0=null; }, {passive:true});
 
   // Resize
-  window.addEventListener('resize', function() {
-    if (!_3d.renderer) return;
-    var W = canvas.clientWidth, H = canvas.clientHeight;
-    _3d.renderer.setSize(W, H);
-    _3d.camera.aspect = W/H;
+  window.addEventListener('resize', function(){
+    if(!_3d.renderer) return;
+    var W=canvas.clientWidth, H=canvas.clientHeight;
+    _3d.renderer.setSize(W,H);
+    _3d.camera.aspect=W/H;
     _3d.camera.updateProjectionMatrix();
   });
 
-  // Render loop
+  /* ── RENDER LOOP ── */
   function loop() {
     _3d.animId = requestAnimationFrame(loop);
-    // Slow auto-rotate when not dragging
     if (!_3d.isDragging) {
-      _3d.spherical.theta += 0.002;
+      _3d.spherical.theta += 0.0015;
       updateCamera();
     }
     renderer.render(scene, camera);
   }
   loop();
+}
+
+function buildRack(scene) {
+  /* ──────────────────────────────────────────────
+     CONVENTION : vue AVANT = côté positif Z
+     Numérotation slots 1,2,3 = gauche→droite (X-)→(X+)
+     Étages A=bas, B=milieu, C=haut
+  ────────────────────────────────────────────── */
+
+  var RACK_W  = 2.9;   // largeur totale
+  var RACK_D  = 1.1;   // profondeur totale
+  var SHELF_H = 0.06;  // épaisseur plancher
+  var PILLAR  = 0.07;  // section pilier
+  var LEVEL_H = 1.0;   // hauteur entre niveaux
+  var SLOT_W  = 0.82;  // largeur d'un slot
+  var SLOT_D  = 0.85;  // profondeur d'un slot
+  var SLOT_H  = 0.55;  // hauteur du colis
+
+  /* demi-dimensions */
+  var hw = RACK_W / 2;
+  var hd = RACK_D / 2;
+
+  /* mats */
+  function stdMat(hex, emHex, rough, metal) {
+    return new THREE.MeshStandardMaterial({
+      color: hex, emissive: emHex||0, roughness: rough!==undefined?rough:0.65, metalness: metal!==undefined?metal:0.4
+    });
+  }
+
+  var steelMat  = stdMat(0x1e2030, 0, 0.7, 0.6);
+  var shelfMats = [
+    stdMat(0x0a4d32, 0x011a0e, 0.5, 0.35),  // A vert
+    stdMat(0x0d2a6b, 0x040e28, 0.5, 0.35),  // B bleu
+    stdMat(0x3b1466, 0x12041e, 0.5, 0.35),  // C violet
+  ];
+
+  /* ── PILIERS (4 coins) ── */
+  var pilGeo = new THREE.BoxGeometry(PILLAR, 3.5, PILLAR);
+  [[-hw, 1.75, -hd],[-hw, 1.75, hd],[hw, 1.75, -hd],[hw, 1.75, hd]].forEach(function(p){
+    var m = new THREE.Mesh(pilGeo, steelMat);
+    m.position.set(p[0],p[1],p[2]);
+    m.castShadow = true;
+    scene.add(m);
+  });
+
+  /* ── TRAVERSES H (avant + arrière, chaque niveau) ── */
+  var trGeo = new THREE.BoxGeometry(RACK_W - PILLAR, PILLAR, PILLAR);
+  [0.05, 1.05, 2.05, 3.1].forEach(function(y){
+    [-hd, hd].forEach(function(z){
+      var m = new THREE.Mesh(trGeo, steelMat);
+      m.position.set(0, y, z);
+      scene.add(m);
+    });
+  });
+
+  /* ── TRAVERSES latérales ── */
+  var latGeo = new THREE.BoxGeometry(PILLAR, PILLAR, RACK_D - PILLAR);
+  [0.05, 1.05, 2.05, 3.1].forEach(function(y){
+    [-hw, hw].forEach(function(x){
+      var m = new THREE.Mesh(latGeo, steelMat);
+      m.position.set(x, y, 0);
+      scene.add(m);
+    });
+  });
+
+  /* ── DIAGONALES décoratives ── */
+  [0,1,2].forEach(function(li){
+    var y1 = 0.05 + li * LEVEL_H;
+    var y2 = y1 + LEVEL_H;
+    var pts = [new THREE.Vector3(-hw, y1, -hd), new THREE.Vector3(hw, y2, -hd)];
+    var lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    var lineMat = new THREE.LineBasicMaterial({ color: 0x2a2a44, transparent: true, opacity: 0.5 });
+    scene.add(new THREE.Line(lineGeo, lineMat));
+  });
+
+  /* ── PLANCHERS + SLOTS ── */
+  /*  A = level 0 (bas) → yBase = 0.05 + 0*1.0 = 0.05
+      B = level 1 (mid) → yBase = 0.05 + 1*1.0 = 1.05
+      C = level 2 (haut)→ yBase = 0.05 + 2*1.0 = 2.05
+  */
+  _3d.slotMeshes = {};
+
+  ['A','B','C'].forEach(function(etage, li){
+    var yBase = 0.05 + li * LEVEL_H;
+
+    /* plancher */
+    var planGeo = new THREE.BoxGeometry(RACK_W - PILLAR, SHELF_H, RACK_D - PILLAR);
+    var plan = new THREE.Mesh(planGeo, shelfMats[li]);
+    plan.position.set(0, yBase + SHELF_H/2, 0);
+    plan.receiveShadow = true;
+    plan.castShadow = true;
+    scene.add(plan);
+
+    /* étiquette étage */
+    var tagGeo = new THREE.BoxGeometry(0.14, 0.22, 0.04);
+    var tagMat = new THREE.MeshStandardMaterial({ color: shelfMats[li].color, emissive: shelfMats[li].color, emissiveIntensity: 0.5 });
+    var tag = new THREE.Mesh(tagGeo, tagMat);
+    tag.position.set(-hw - 0.12, yBase + 0.25, 0);
+    scene.add(tag);
+
+    /* séparateurs verticaux entre slots */
+    [1,2].forEach(function(sep){
+      var sepGeo = new THREE.BoxGeometry(0.04, SLOT_H + 0.1, SLOT_D + 0.05);
+      var sm = new THREE.Mesh(sepGeo, steelMat);
+      /* slot 1|2 séparateur à x = -hw + SLOT_W - PILLAR/2 */
+      var sepX = -hw + PILLAR/2 + sep * SLOT_W;
+      sm.position.set(sepX, yBase + SHELF_H + (SLOT_H + 0.1)/2, 0);
+      scene.add(sm);
+    });
+
+    /* ── COLIS dans chaque slot ──
+       slots numérotés 1,2,3 gauche→droite = X négatif→X positif
+       xCenter slot i (0-based) = -hw + PILLAR/2 + SLOT_W/2 + i*SLOT_W
+    */
+    for (var i = 0; i < 3; i++) {
+      var slotNum = i + 1;  /* 1,2,3 */
+      var id = etage + slotNum;
+      var xCenter = -hw + PILLAR/2 + SLOT_W/2 + i * SLOT_W;
+      var yCenter = yBase + SHELF_H + SLOT_H/2 + 0.02;
+
+      var s = state[id];
+      var isEmpty   = !s || !s.colis;
+      var isSealed  = s && s.sealed;
+
+      var col = isEmpty ? 0x222236 : (isSealed ? 0x10b981 : 0xf59e0b);
+      var em  = isEmpty ? 0x000000 : (isSealed ? 0x062e1c : 0x422800);
+      var cGeo = new THREE.BoxGeometry(SLOT_W - 0.06, isEmpty ? 0.05 : SLOT_H, SLOT_D - 0.06);
+      var cMat = stdMat(col, em, 0.5, 0.05);
+      var colis = new THREE.Mesh(cGeo, cMat);
+      colis.position.set(xCenter, isEmpty ? yBase + SHELF_H + 0.025 : yCenter, 0);
+      colis.castShadow = true;
+      colis.receiveShadow = true;
+      colis.userData = { id: id };
+      scene.add(colis);
+      _3d.slotMeshes[id] = { mesh: colis, yBase: yBase, SHELF_H: SHELF_H, SLOT_H: SLOT_H };
+    }
+  });
+
+  /* petites lumières LED sous chaque plancher */
+  ['A','B','C'].forEach(function(etage, li){
+    var yBase = 0.05 + li * LEVEL_H;
+    var ledColors = [0x10b981, 0x3b82f6, 0x7c3aed];
+    var led = new THREE.PointLight(ledColors[li], 0.25, 2);
+    led.position.set(0, yBase + 0.5, 0);
+    scene.add(led);
+  });
 }
 
 function updateCamera() {
@@ -2169,22 +2231,38 @@ function updateCamera() {
   if (_3d.camera) {
     _3d.camera.position.set(x, y, z);
     _3d.camera.lookAt(0, 1.5, 0);
+    _3d.camera.updateProjectionMatrix();
   }
 }
 
 function refresh3DColors() {
-  Object.keys(_3d.slotMeshes).forEach(function(id) {
-    var mesh = _3d.slotMeshes[id];
-    var s = state[id];
-    var col = !s || !s.colis ? 0x2a2a3e : (s.sealed ? 0x10b981 : 0xf59e0b);
-    var em  = !s || !s.colis ? 0x000000 : (s.sealed ? 0x034a2c : 0x5a3800);
+  Object.keys(_3d.slotMeshes).forEach(function(id){
+    var entry  = _3d.slotMeshes[id];
+    var mesh   = entry.mesh;
+    var s      = state[id];
+    var isEmpty  = !s || !s.colis;
+    var isSealed = s && s.sealed;
+    var col = isEmpty ? 0x222236 : (isSealed ? 0x10b981 : 0xf59e0b);
+    var em  = isEmpty ? 0x000000 : (isSealed ? 0x062e1c : 0x422800);
     mesh.material.color.setHex(col);
     mesh.material.emissive.setHex(em);
+    /* ajuster la hauteur */
+    var yBase   = entry.yBase;
+    var SHELF_H = entry.SHELF_H;
+    var SLOT_H  = entry.SLOT_H;
+    var SLOT_W  = 0.82;
+    if (isEmpty) {
+      mesh.scale.y = 0.09 / SLOT_H;
+      mesh.position.y = yBase + SHELF_H + 0.025;
+    } else {
+      mesh.scale.y = 1;
+      mesh.position.y = yBase + SHELF_H + SLOT_H/2 + 0.02;
+    }
   });
 }
 
-document.getElementById('v3d-bg').addEventListener('click', function(e) {
-  if (e.target.id === 'v3d-bg') close3D();
+document.getElementById('v3d-bg').addEventListener('click', function(e){
+  if(e.target.id==='v3d-bg') close3D();
 });
 
 loadHist();
