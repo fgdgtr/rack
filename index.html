@@ -461,6 +461,21 @@ body::after {
   width: fit-content;
 }
 
+
+.colis-note {
+  font-size: 10px;
+  color: var(--text3);
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Space Mono', monospace;
+}
 .status-pending { background: rgba(245,158,11,.12); color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
 .status-sealed { background: rgba(16,185,129,.12); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
 
@@ -1270,6 +1285,65 @@ body::after {
   min-width: 140px;
 }
 .v3d-tooltip strong { font-size: 14px; font-weight: 800; display: block; margin-bottom: 3px; }
+
+/* ── FICHE 3D ── */
+.fiche3d {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(13,13,22,.97);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 24px;
+  min-width: 240px;
+  max-width: 300px;
+  z-index: 20;
+  box-shadow: 0 24px 60px rgba(0,0,0,.7);
+  display: none;
+  animation: ficheIn .2s cubic-bezier(.34,1.4,.64,1);
+}
+.fiche3d.show { display: block; }
+@keyframes ficheIn {
+  from { opacity:0; transform: translate(-50%,-50%) scale(.88); }
+  to   { opacity:1; transform: translate(-50%,-50%) scale(1); }
+}
+.fiche3d-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; color: var(--text3);
+  font-size: 18px; cursor: pointer; line-height: 1;
+  transition: color .15s;
+}
+.fiche3d-close:hover { color: var(--text); }
+.fiche3d-id {
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 3px; color: var(--text3); margin-bottom: 10px;
+}
+.fiche3d-ref {
+  font-size: 20px; font-weight: 800; margin-bottom: 4px;
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.fiche3d-row {
+  font-size: 12px; color: var(--text2); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 7px;
+}
+.fiche3d-note {
+  margin-top: 12px; padding: 10px 12px;
+  background: rgba(124,58,237,.08);
+  border: 1px solid rgba(124,58,237,.2);
+  border-radius: 10px;
+  font-size: 11px; color: var(--text2); line-height: 1.6;
+  font-family: 'Space Mono', monospace;
+}
+.fiche3d-status {
+  margin-top: 12px; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; font-family: 'Space Mono', monospace;
+}
+.fiche3d-empty {
+  text-align: center; padding: 12px 0;
+  color: var(--text3); font-size: 13px;
+}
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .slot-actions { opacity: 1; transform: none; }
@@ -1348,6 +1422,10 @@ body::after {
     <div class="field">
       <div class="field-label">Date de fin de livraison</div>
       <input class="field-input" id="inp-date" type="date" />
+    </div>
+    <div class="field">
+      <div class="field-label">📝 Note rapide (optionnel)</div>
+      <textarea class="field-input" id="inp-note" rows="3" placeholder="Ex: Fragile, contacter avant livraison…" style="resize:vertical;min-height:70px;line-height:1.5"></textarea>
     </div>
     <div class="modal-actions">
       <button class="maction maction-cancel" onclick="closeFormModal()">Annuler</button>
@@ -1512,7 +1590,19 @@ body::after {
     <strong>Contrôles</strong><br>
     🖱 Glisse = Rotation<br>
     🔄 Molette = Zoom<br>
+    🖱 Clic colis = Détail<br>
     📱 Tactile supporté
+  </div>
+
+  <!-- FICHE DETAIL -->
+  <div class="fiche3d" id="fiche3d">
+    <button class="fiche3d-close" onclick="closeFiche()">✕</button>
+    <div class="fiche3d-id" id="fiche3d-id">—</div>
+    <div class="fiche3d-ref" id="fiche3d-ref">—</div>
+    <div class="fiche3d-row" id="fiche3d-company">—</div>
+    <div class="fiche3d-row" id="fiche3d-date">—</div>
+    <div class="fiche3d-note" id="fiche3d-note" style="display:none"></div>
+    <div class="fiche3d-status" id="fiche3d-status">—</div>
   </div>
 </div>
 
@@ -1776,6 +1866,7 @@ function buildSlotCard(id, slot) {
       <div class="colis-ref">${esc(c.ref)}</div>
       <div class="colis-company">🏭 ${esc(c.company)}</div>
       <div class="colis-date">📅 ${dateStr}</div>
+      ${c.note ? `<div class="colis-note">📝 ${esc(c.note)}</div>` : ''}
       <div class="status-pill ${slot.sealed ? 'status-sealed' : 'status-pending'}">
         ${slot.sealed ? '✓ prêt' : '⏳ En suivi'}
       </div>
@@ -1792,6 +1883,7 @@ function openAddModal(id) {
   document.getElementById('inp-ref').value = '';
   document.getElementById('inp-company').value = '';
   document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('inp-note').value = '';
   document.getElementById('modal-form').classList.add('open');
   setTimeout(() => document.getElementById('inp-ref').focus(), 100);
 }
@@ -1804,6 +1896,7 @@ function openEditModal(id) {
   document.getElementById('inp-ref').value = c.ref;
   document.getElementById('inp-company').value = c.company;
   document.getElementById('inp-date').value = c.date;
+  document.getElementById('inp-note').value = c.note || '';
   document.getElementById('modal-form').classList.add('open');
 }
 function closeFormModal() { document.getElementById('modal-form').classList.remove('open'); currentSlot = null; }
@@ -1812,9 +1905,10 @@ function saveColis() {
   const ref = document.getElementById('inp-ref').value.trim();
   const company = document.getElementById('inp-company').value.trim();
   const date = document.getElementById('inp-date').value.trim();
+  const note = document.getElementById('inp-note').value.trim();
   if (!ref || !company || !date) { showToast('Remplissez tous les champs ⚠️', ''); return; }
   const isNew = !state[currentSlot].colis;
-  state[currentSlot].colis = { ref, company, date };
+  state[currentSlot].colis = { ref, company, date, note };
   if (isNew) state[currentSlot].sealed = false;
   addHist('added', currentSlot, ref, company);
   closeFormModal();
@@ -2115,6 +2209,28 @@ function setup3D() {
     _3d.spherical.phi=0.15; updateCamera();
   };
 
+
+  /* ── RAYCASTING clic sur colis ── */
+  var raycaster = new THREE.Raycaster();
+  var mouse2d = new THREE.Vector2();
+
+  canvas.addEventListener('click', function(e) {
+    if (_3d.isDragging) return;
+    var rect = canvas.getBoundingClientRect();
+    mouse2d.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse2d.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse2d, _3d.camera);
+    var meshes = Object.keys(_3d.slotMeshes).map(function(id){ return _3d.slotMeshes[id].mesh; });
+    var hits = raycaster.intersectObjects(meshes);
+    if (hits.length > 0) {
+      var hitMesh = hits[0].object;
+      var id = hitMesh.userData.id;
+      if (id) showFiche(id);
+    } else {
+      closeFiche();
+    }
+  });
+
   /* Render loop */
   function loop() {
     _3d.animId=requestAnimationFrame(loop);
@@ -2226,6 +2342,46 @@ function refresh3DColors(){
     if(isEmpty){ mesh.scale.set(1,0.04/SLOT_H,1); mesh.position.y=yBase+SHELF_H+0.02; }
     else{ mesh.scale.set(1,1,1); mesh.position.y=yBase+SHELF_H+SLOT_H/2+0.02; }
   });
+}
+
+
+function showFiche(id) {
+  var s = state[id];
+  var fiche = document.getElementById('fiche3d');
+  document.getElementById('fiche3d-id').textContent = 'EMPLACEMENT — ' + id;
+  if (!s || !s.colis) {
+    document.getElementById('fiche3d-ref').textContent = 'Vide';
+    document.getElementById('fiche3d-company').textContent = 'Aucun colis dans cet emplacement';
+    document.getElementById('fiche3d-date').textContent = '';
+    document.getElementById('fiche3d-note').style.display = 'none';
+    document.getElementById('fiche3d-status').textContent = '';
+    document.getElementById('fiche3d-status').className = 'fiche3d-status';
+  } else {
+    var c = s.colis;
+    var dateStr = new Date(c.date + 'T00:00:00').toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('fiche3d-ref').textContent = c.ref;
+    document.getElementById('fiche3d-company').innerHTML = '🏭 ' + esc(c.company);
+    document.getElementById('fiche3d-date').innerHTML = '📅 ' + dateStr;
+    if (c.note) {
+      document.getElementById('fiche3d-note').textContent = '📝 ' + c.note;
+      document.getElementById('fiche3d-note').style.display = 'block';
+    } else {
+      document.getElementById('fiche3d-note').style.display = 'none';
+    }
+    var pill = document.getElementById('fiche3d-status');
+    if (s.sealed) {
+      pill.textContent = '✓ Feuille prête';
+      pill.className = 'fiche3d-status status-sealed';
+    } else {
+      pill.textContent = '⏳ En suivi';
+      pill.className = 'fiche3d-status status-pending';
+    }
+  }
+  fiche.classList.add('show');
+}
+
+function closeFiche() {
+  document.getElementById('fiche3d').classList.remove('show');
 }
 
 document.getElementById('v3d-bg').addEventListener('click',function(e){ if(e.target.id==='v3d-bg') close3D(); });
