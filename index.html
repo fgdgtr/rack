@@ -1553,13 +1553,26 @@ body::after {
       </div>
 
       <div class="guide-slide" id="gslide-4">
-        <div class="guide-slide-eyebrow">Étape 4 / 4</div>
+        <div class="guide-slide-eyebrow">Étape 4 / 5</div>
         <div class="guide-slide-title">📊 Historique & Export</div>
         <div class="guide-slide-body">Consultez l'historique et exportez en PDF.</div>
         <div class="guide-items">
           <div class="guide-item"><div class="guide-item-ico">📊</div><div class="guide-item-text">Bouton <strong>Historique</strong> en haut</div></div>
           <div class="guide-item"><div class="guide-item-ico">📥</div><div class="guide-item-text">Bouton <strong>Export PDF</strong> dans l'historique</div></div>
           <div class="guide-item"><div class="guide-item-ico">🗑️</div><div class="guide-item-text">Effacer l'historique si besoin</div></div>
+        </div>
+      </div>
+
+
+      <div class="guide-slide" id="gslide-5">
+        <div class="guide-slide-eyebrow">Étape 5 / 5</div>
+        <div class="guide-slide-title">Vue en 3D</div>
+        <div class="guide-slide-body">Accéder à une vue en 3D du rack.</div>
+        <div class="guide-items">
+          <div class="guide-item"><div class="guide-item-ico">📦</div><div class="guide-item-text">Cliquer sur <strong>un colis</strong> pour voir les infos</div></div>
+          <div class="guide-item"><div class="guide-item-ico">📬</div><div class="guide-item-text">vu de chaque <strong>colis</strong>avec couleur</div></div>
+          <div class="guide-item"><div class="guide-item-ico">📬</div><div class="guide-item-text">vu de chaque <strong>colis</strong> avec couleur</div></div>
+          <div class="guide-item"><div class="guide-item-ico">🔍</div><div class="guide-item-text">Boutons de vues rapides : Face, Arrière, Gauche, Droite, Dessus.</div></div>
         </div>
       </div>
     </div>
@@ -1570,6 +1583,7 @@ body::after {
         <div class="guide-dot" onclick="goGuide(2)"></div>
         <div class="guide-dot" onclick="goGuide(3)"></div>
         <div class="guide-dot" onclick="goGuide(4)"></div>
+         <div class="guide-dot" onclick="goGuide(5)"></div>
       </div>
       <div class="guide-nav">
         <button class="gnav-btn gnav-prev" id="gnav-prev" onclick="stepGuide(-1)">← Préc.</button>
@@ -1691,7 +1705,7 @@ document.getElementById('qr-bg').addEventListener('click', e => {
 
 /* ── GUIDE ── */
 let guideSlide = 1;
-const GUIDE_TOTAL = 4;
+const GUIDE_TOTAL = 5;
 
 function openGuide() {
   guideSlide = 1;
