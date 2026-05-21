@@ -1344,6 +1344,29 @@ body::after {
   text-align: center; padding: 12px 0;
   color: var(--text3); font-size: 13px;
 }
+
+/* ── SCREENSHOT BTN ── */
+.v3d-screenshot {
+  position: absolute;
+  bottom: 20px; right: 20px;
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px;
+  color: #fff; font-size: 12px; font-weight: 700;
+  padding: 9px 14px; cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  transition: all .15s; z-index: 10;
+  display: flex; align-items: center; gap: 7px;
+}
+.v3d-screenshot:hover {
+  background: rgba(219,39,119,.4);
+  border-color: rgba(219,39,119,.6);
+  box-shadow: 0 0 16px rgba(219,39,119,.3);
+}
+.v3d-screenshot.flash {
+  background: rgba(16,185,129,.4);
+  border-color: #10b981;
+}
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .slot-actions { opacity: 1; transform: none; }
@@ -1365,7 +1388,7 @@ body::after {
     <button class="guide-btn" onclick="openGuide()" title="Guide d'utilisation">?</button>
     <button class="guide-btn qr-btn" onclick="openQR()" title="QR Code">⬛</button>
     <button class="guide-btn hist-btn" onclick="openHist()" title="Historique">📊</button>
-    <button class="guide-btn view3d-btn" onclick="open3D()" title="Vue 3D">3D</button>
+    <button class="guide-btn view3d-btn" onclick="open3D()" title="Vue 3D">🎮</button>
     <div class="sync-pill">
       <div class="sync-dot loading" id="sync-dot"></div>
       <span id="sync-text">Connexion…</span>
@@ -1490,14 +1513,14 @@ body::after {
       <div class="guide-hdr-ico">📋</div>
       <div>
         <div class="guide-hdr-title">Guide d'utilisation</div>
-        <div class="guide-hdr-sub">RACK attente d'usinage — 5 étapes</div>
+        <div class="guide-hdr-sub">RACK attente d'usinage — 4 étapes</div>
       </div>
       <button class="guide-hdr-close" onclick="closeGuide()">✕</button>
     </div>
 
     <div class="guide-slides">
       <div class="guide-slide active" id="gslide-1">
-        <div class="guide-slide-eyebrow">Étape 1 / 5</div>
+        <div class="guide-slide-eyebrow">Étape 1 / 4</div>
         <div class="guide-slide-title">🗂️ Comprendre le rack</div>
         <div class="guide-slide-body">Ce rack contient <strong>3 étages (A, B, C)</strong> avec <strong>3 emplacements chacun</strong>, soit 9 slots au total.</div>
         <div class="guide-items">
@@ -1508,7 +1531,7 @@ body::after {
       </div>
 
       <div class="guide-slide" id="gslide-2">
-        <div class="guide-slide-eyebrow">Étape 2 / 5</div>
+        <div class="guide-slide-eyebrow">Étape 2 / 4</div>
         <div class="guide-slide-title">➕ Ajouter un colis</div>
         <div class="guide-slide-body">Enregistrez chaque colis en quelques secondes.</div>
         <div class="guide-items">
@@ -1520,7 +1543,7 @@ body::after {
       </div>
 
       <div class="guide-slide" id="gslide-3">
-        <div class="guide-slide-eyebrow">Étape 3 / 5</div>
+        <div class="guide-slide-eyebrow">Étape 3 / 4</div>
         <div class="guide-slide-title">🔒 Marquer comme prêt</div>
         <div class="guide-slide-body">Quand la feuille de suivi est complète, marquez-la comme prête.</div>
         <div class="guide-items">
@@ -1530,26 +1553,14 @@ body::after {
         </div>
       </div>
 
-       <div class="guide-slide" id="gslide-4">
-        <div class="guide-slide-eyebrow">Étape 4 / 5</div>
+      <div class="guide-slide" id="gslide-4">
+        <div class="guide-slide-eyebrow">Étape 4 / 4</div>
         <div class="guide-slide-title">📊 Historique & Export</div>
         <div class="guide-slide-body">Consultez l'historique et exportez en PDF.</div>
         <div class="guide-items">
           <div class="guide-item"><div class="guide-item-ico">📊</div><div class="guide-item-text">Bouton <strong>Historique</strong> en haut</div></div>
           <div class="guide-item"><div class="guide-item-ico">📥</div><div class="guide-item-text">Bouton <strong>Export PDF</strong> dans l'historique</div></div>
           <div class="guide-item"><div class="guide-item-ico">🗑️</div><div class="guide-item-text">Effacer l'historique si besoin</div></div>
-        </div>
-      </div>
-      
-  
-      <div class="guide-slide" id="gslide-5">
-        <div class="guide-slide-eyebrow">Étape 5 / 5</div>
-        <div class="guide-slide-title">Vue en 3D</div>
-        <div class="guide-slide-body">Accéder à une vue en 3D du rack.</div>
-        <div class="guide-items">
-          <div class="guide-item"><div class="guide-item-ico">📦</div><div class="guide-item-text">Cliquer sur <strong>un colis</strong> pour voir les infos</div></div>
-          <div class="guide-item"><div class="guide-item-ico">📬</div><div class="guide-item-text">vu de chaque <strong>colis</strong> avec couleur</div></div>
-          <div class="guide-item"><div class="guide-item-ico">🔍</div><div class="guide-item-text">Boutons de vues rapides : Face, Arrière, Gauche, Droite, Dessus.</div></div>
         </div>
       </div>
     </div>
@@ -1560,7 +1571,6 @@ body::after {
         <div class="guide-dot" onclick="goGuide(2)"></div>
         <div class="guide-dot" onclick="goGuide(3)"></div>
         <div class="guide-dot" onclick="goGuide(4)"></div>
-        <div class="guide-dot" onclick="goGuide(5)"></div>
       </div>
       <div class="guide-nav">
         <button class="gnav-btn gnav-prev" id="gnav-prev" onclick="stepGuide(-1)">← Préc.</button>
@@ -1577,7 +1587,7 @@ body::after {
 
   <!-- TOP BAR -->
   <div class="v3d-topbar">
-    <div class="v3d-title"> Vue 3D — Rack Usinage</div>
+    <div class="v3d-title">🎮 Vue 3D — Rack Usinage</div>
     <div class="v3d-view-badge" id="v3d-view-label">⬆️ Vue de face</div>
     <button class="v3d-close" onclick="close3D()">✕</button>
   </div>
@@ -1596,6 +1606,7 @@ body::after {
     <div class="v3d-leg-row"><div class="v3d-dot" style="background:#1a1a2e;border:1px solid #333"></div>Vide</div>
     <div class="v3d-leg-row"><div class="v3d-dot" style="background:#f59e0b"></div>En suivi</div>
     <div class="v3d-leg-row"><div class="v3d-dot" style="background:#10b981"></div>Prêt</div>
+    <div class="v3d-leg-row"><div class="v3d-dot" style="background:#ff2222;animation:blink .5s infinite"></div>En retard !</div>
   </div>
 
   <!-- CONTROLS -->
@@ -1606,6 +1617,11 @@ body::after {
     🖱 Clic colis = Détail<br>
     📱 Tactile supporté
   </div>
+
+  <!-- SCREENSHOT -->
+  <button class="v3d-screenshot" id="v3d-screenshot" onclick="takeScreenshot()">
+    📸 Capture
+  </button>
 
   <!-- FICHE DETAIL -->
   <div class="fiche3d" id="fiche3d">
@@ -1678,7 +1694,7 @@ document.getElementById('qr-bg').addEventListener('click', e => {
 
 /* ── GUIDE ── */
 let guideSlide = 1;
-const GUIDE_TOTAL = 5;
+const GUIDE_TOTAL = 4;
 
 function openGuide() {
   guideSlide = 1;
@@ -2132,7 +2148,7 @@ function setup3D() {
   var canvas = document.getElementById('v3d-canvas');
   var W = canvas.clientWidth, H = canvas.clientHeight;
 
-  var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true });
+  var renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, preserveDrawingBuffer:true });
   renderer.setSize(W, H);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
@@ -2255,7 +2271,19 @@ function setup3D() {
     var t=Date.now()*0.002;
     Object.keys(_3d.slotMeshes).forEach(function(id){
       var entry=_3d.slotMeshes[id]; var s=state[id];
-      if(s&&s.colis&&!s.sealed) entry.mesh.material.emissiveIntensity=0.25+0.15*Math.sin(t+entry.phase);
+      if(!s||!s.colis) return;
+      if(s.sealed) return;
+      /* colis en retard = date dépassée */
+      var isLate = s.colis.date && new Date(s.colis.date+'T00:00:00') < new Date();
+      if(isLate) {
+        /* clignote rouge */
+        var pulse = 0.5+0.5*Math.sin(t*3+entry.phase);
+        entry.mesh.material.color.setHex(0xff2222);
+        entry.mesh.material.emissive.setHex(0x660000);
+        entry.mesh.material.emissiveIntensity = pulse;
+      } else {
+        entry.mesh.material.emissiveIntensity=0.25+0.15*Math.sin(t+entry.phase);
+      }
     });
     renderer.render(scene,camera);
   }
@@ -2352,8 +2380,9 @@ function refresh3DColors(){
   Object.keys(_3d.slotMeshes).forEach(function(id){
     var entry=_3d.slotMeshes[id], mesh=entry.mesh, s=state[id];
     var isEmpty=!s||!s.colis, isSealed=s&&s.sealed;
-    mesh.material.color.setHex(isEmpty?0x1a1a2e:(isSealed?0x10b981:0xf59e0b));
-    mesh.material.emissive.setHex(isEmpty?0x000000:(isSealed?0x062e1c:0x422800));
+    var isLate = !isEmpty && !isSealed && s.colis.date && new Date(s.colis.date+'T00:00:00') < new Date();
+    mesh.material.color.setHex(isEmpty?0x1a1a2e:(isSealed?0x10b981:(isLate?0xff2222:0xf59e0b)));
+    mesh.material.emissive.setHex(isEmpty?0x000000:(isSealed?0x062e1c:(isLate?0x660000:0x422800)));
     mesh.material.emissiveIntensity=isEmpty?0:0.3;
     var SLOT_H=entry.SLOT_H,SHELF_H=entry.SHELF_H,yBase=entry.yBase;
     if(isEmpty){ mesh.scale.set(1,0.04/SLOT_H,1); mesh.position.y=yBase+SHELF_H+0.02; }
@@ -2361,6 +2390,30 @@ function refresh3DColors(){
   });
 }
 
+
+
+function takeScreenshot() {
+  if (!_3d.renderer) return;
+  /* render un frame propre */
+  _3d.renderer.render(_3d.scene, _3d.camera);
+  var dataURL = _3d.renderer.domElement.toDataURL('image/png');
+  var a = document.createElement('a');
+  var now = new Date();
+  var filename = 'AUEM_Rack_' + now.toISOString().slice(0,10) + '_' + now.toTimeString().slice(0,5).replace(':','h') + '.png';
+  a.href = dataURL;
+  a.download = filename;
+  a.click();
+  /* flash visuel */
+  var btn = document.getElementById('v3d-screenshot');
+  btn.classList.add('flash');
+  btn.textContent = '✅ Sauvegardé!';
+  setTimeout(function(){ btn.classList.remove('flash'); btn.innerHTML = '📸 Capture'; }, 2000);
+  /* flash blanc sur le canvas */
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:absolute;inset:0;background:white;opacity:0.4;pointer-events:none;z-index:5;transition:opacity .3s';
+  document.getElementById('v3d-bg').appendChild(overlay);
+  setTimeout(function(){ overlay.style.opacity='0'; setTimeout(function(){ overlay.remove(); },300); },50);
+}
 
 function showFiche(id) {
   var s = state[id];
