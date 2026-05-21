@@ -1387,7 +1387,7 @@ body::after {
     <button class="guide-btn" onclick="openGuide()" title="Guide d'utilisation">?</button>
     <button class="guide-btn qr-btn" onclick="openQR()" title="QR Code">⬛</button>
     <button class="guide-btn hist-btn" onclick="openHist()" title="Historique">📊</button>
-    <button class="guide-btn view3d-btn" onclick="open3D()" title="Vue 3D">🎮</button>
+    <button class="guide-btn view3d-btn" onclick="open3D()" title="Vue 3D">3D</button>
     <div class="sync-pill">
       <div class="sync-dot loading" id="sync-dot"></div>
       <span id="sync-text">Connexion…</span>
@@ -1512,14 +1512,14 @@ body::after {
       <div class="guide-hdr-ico">📋</div>
       <div>
         <div class="guide-hdr-title">Guide d'utilisation</div>
-        <div class="guide-hdr-sub">RACK attente d'usinage — 4 étapes</div>
+        <div class="guide-hdr-sub">RACK attente d'usinage — 5 étapes</div>
       </div>
       <button class="guide-hdr-close" onclick="closeGuide()">✕</button>
     </div>
 
     <div class="guide-slides">
       <div class="guide-slide active" id="gslide-1">
-        <div class="guide-slide-eyebrow">Étape 1 / 4</div>
+        <div class="guide-slide-eyebrow">Étape 1 / 5</div>
         <div class="guide-slide-title">🗂️ Comprendre le rack</div>
         <div class="guide-slide-body">Ce rack contient <strong>3 étages (A, B, C)</strong> avec <strong>3 emplacements chacun</strong>, soit 9 slots au total.</div>
         <div class="guide-items">
@@ -1530,7 +1530,7 @@ body::after {
       </div>
 
       <div class="guide-slide" id="gslide-2">
-        <div class="guide-slide-eyebrow">Étape 2 / 4</div>
+        <div class="guide-slide-eyebrow">Étape 2 / 5</div>
         <div class="guide-slide-title">➕ Ajouter un colis</div>
         <div class="guide-slide-body">Enregistrez chaque colis en quelques secondes.</div>
         <div class="guide-items">
@@ -1542,7 +1542,7 @@ body::after {
       </div>
 
       <div class="guide-slide" id="gslide-3">
-        <div class="guide-slide-eyebrow">Étape 3 / 4</div>
+        <div class="guide-slide-eyebrow">Étape 3 / 5</div>
         <div class="guide-slide-title">🔒 Marquer comme prêt</div>
         <div class="guide-slide-body">Quand la feuille de suivi est complète, marquez-la comme prête.</div>
         <div class="guide-items">
@@ -1600,7 +1600,7 @@ body::after {
 
   <!-- TOP BAR -->
   <div class="v3d-topbar">
-    <div class="v3d-title">🎮 Vue 3D — Rack Usinage</div>
+    <div class="v3d-title"> Vue 3D — Rack Usinage</div>
     <div class="v3d-view-badge" id="v3d-view-label">⬆️ Vue de face</div>
     <button class="v3d-screenshot" id="v3d-screenshot" onclick="takeScreenshot()">📸 Capture du rack</button>
     <button class="v3d-close" onclick="close3D()">✕</button>
