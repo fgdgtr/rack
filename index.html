@@ -1347,16 +1347,15 @@ body::after {
 
 /* ── SCREENSHOT BTN ── */
 .v3d-screenshot {
-  position: absolute;
-  bottom: 20px; right: 20px;
-  background: rgba(0,0,0,.65);
+  background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.15);
   border-radius: 10px;
-  color: #fff; font-size: 12px; font-weight: 700;
-  padding: 9px 14px; cursor: pointer;
+  color: #fff; font-size: 11px; font-weight: 700;
+  padding: 8px 12px; cursor: pointer;
   font-family: 'Space Mono', monospace;
-  transition: all .15s; z-index: 10;
-  display: flex; align-items: center; gap: 7px;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
 }
 .v3d-screenshot:hover {
   background: rgba(219,39,119,.4);
@@ -1589,6 +1588,7 @@ body::after {
   <div class="v3d-topbar">
     <div class="v3d-title">🎮 Vue 3D — Rack Usinage</div>
     <div class="v3d-view-badge" id="v3d-view-label">⬆️ Vue de face</div>
+    <button class="v3d-screenshot" id="v3d-screenshot" onclick="takeScreenshot()">📸 Capture</button>
     <button class="v3d-close" onclick="close3D()">✕</button>
   </div>
 
@@ -1618,10 +1618,7 @@ body::after {
     📱 Tactile supporté
   </div>
 
-  <!-- SCREENSHOT -->
-  <button class="v3d-screenshot" id="v3d-screenshot" onclick="takeScreenshot()">
-    📸 Capture
-  </button>
+
 
   <!-- FICHE DETAIL -->
   <div class="fiche3d" id="fiche3d">
